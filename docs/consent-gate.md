@@ -47,7 +47,7 @@ A family may enroll any number of consented voice+face profiles. Convert output 
 
 Kids are not enrollment targets in v1 (`KidProfile` is never `targetEnrollmentId`). Auth/tenancy (`AuthContext`) is a **separate** stub — production auth is blocked — and must not weaken this gate. Family isolation stays `assertSameFamily` fail-closed ([auth-tenancy.md](./auth-tenancy.md)).
 
-Ingest staging does **not** queue convert. After an ingest job is `staged`, convert still requires an explicit `targetEnrollmentId` and this gate (`queueConvertFromIngest` in TypeScript; Python ingest calls `queue_convert_job`).
+Ingest staging does **not** queue convert. After an ingest job is `staged`, convert still requires an explicit `targetEnrollmentId` and this gate (`queueConvertFromIngest` in TypeScript; Python ingest calls `queue_convert_job`). The convert app’s own queue (`queueConvertJob` / `queue_convert_job_in_store`) uses the same rule. Status stubs after queue (`queued` → `running` → `needs_review`) do not run inference.
 
 ## Abuse / rate-limit hooks
 

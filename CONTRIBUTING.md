@@ -38,7 +38,7 @@ Python service stubs are syntax-checked in CI (`python -m compileall`). They do 
 
 ```bash
 npm test
-python3 apps/convert/tests/test_pipeline.py
+python3 -m unittest discover -s apps/convert/tests
 python3 -m unittest discover -s apps/ingest/tests
 ```
 

@@ -13,7 +13,7 @@ Engineering sketch of the **family tenancy boundary**. It is **not** a productio
 
 Until a real IdP is designed and approved, treat every caller as unauthenticated except for this explicit stub used in local wiring and tests.
 
-This slice replaces ad-hoc `x-family-id` / `x-guardian-id` reads with one documented stub used by [`apps/review-api`](../apps/review-api/) and [`apps/ingest`](../apps/ingest/). Convert handoff HTTP (ingest `POST /jobs/:id/convert`) uses the same path. Canonical TypeScript: [`packages/shared/src/auth-context.ts`](../packages/shared/src/auth-context.ts). Python ingest mirror: [`apps/ingest/src/familiar_ingest/auth.py`](../apps/ingest/src/familiar_ingest/auth.py). Shared cases: [`packages/shared/fixtures/auth-tenancy-cases.json`](../packages/shared/fixtures/auth-tenancy-cases.json).
+This slice replaces ad-hoc `x-family-id` / `x-guardian-id` reads with one documented stub used by [`apps/review-api`](../apps/review-api/), [`apps/ingest`](../apps/ingest/), and [`apps/convert`](../apps/convert/). Convert queue HTTP and ingest `POST /jobs/:id/convert` use the same path. Canonical TypeScript: [`packages/shared/src/auth-context.ts`](../packages/shared/src/auth-context.ts). Python mirrors: [`apps/ingest/src/familiar_ingest/auth.py`](../apps/ingest/src/familiar_ingest/auth.py), [`apps/convert/src/familiar_convert/auth.py`](../apps/convert/src/familiar_convert/auth.py). Shared cases: [`packages/shared/fixtures/auth-tenancy-cases.json`](../packages/shared/fixtures/auth-tenancy-cases.json).
 
 Japan/APPI and other capture gates stay checklist-only in [consent.md](./consent.md). Convert/enrollment fail-closed rules are unchanged ([consent-gate.md](./consent-gate.md)).
 
@@ -61,7 +61,7 @@ The stub skips steps 1–3 and takes both ids from the caller. That is why `mode
 
 1. **Never trust a client-supplied family id without binding it to a principal.** The stub binds by requiring **both** `guardianId` and `familyId` together (`resolveAuthContext`). A family header or URL segment alone is not an auth context.
 2. **Cross-family access is refused.** After a context exists, `assertSameFamily(ctx, resourceFamilyId)` must pass. Wrong family → `wrong_family` (HTTP 403). Missing/empty ids → `missing_guardian` or `missing_family` (HTTP 401).
-3. Family-scoped HTTP routes (list/create jobs, get/stage/fail/convert, approve/reject, enrollment revoke/delete) go through the shared resolver. Health stays public. Preview/media stay **501** and never stream bytes.
+3. Family-scoped HTTP routes (list/create jobs, get/stage/fail/convert, convert run/complete/cancel, approve/reject, enrollment revoke/delete) go through the shared resolver. Health stays public. Preview/media stay **501** and never stream bytes.
 4. Convert/enrollment gates stay fail closed: explicit `targetEnrollmentId`, same-family scope, `KidProfile` never an enrollment target. Auth-tenancy does not override `convertJobMayRun`.
 
 Canonical helpers:

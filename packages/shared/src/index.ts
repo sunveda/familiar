@@ -59,6 +59,20 @@ export type {
 } from './ingest-handoff';
 
 export {
+  cancelConvertJob,
+  completeConvertJob,
+  failConvertJob,
+  queueConvertJob,
+  startConvertJob,
+} from './convert-queue';
+export type {
+  ConvertQueueErrorCode,
+  ConvertQueueInput,
+  ConvertQueueResult,
+  ConvertTransitionResult,
+} from './convert-queue';
+
+export {
   AUTH_STUB_MODE,
   STUB_FAMILY_ID_HEADER,
   STUB_GUARDIAN_ID_HEADER,

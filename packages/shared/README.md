@@ -6,7 +6,7 @@ TypeScript types for **Family**, **Guardian**, **Enrollment**, **ConsentRecord**
 
 Enrollment status: `pending` → `active` → `revoked` | `deleted`. Activate requires an unrevoked `ConsentRecord` with enrollment scopes. Delete nulls `artifactRef`. See [docs/guardian-flow.md](../../docs/guardian-flow.md).
 
-Ingest `sourceRef` values are opaque external pointers (`isExternalSourceRef`). Convert handoff (`queueConvertFromIngest`) still requires explicit `targetEnrollmentId` and `convertJobMayRun`.
+Ingest `sourceRef` values are opaque external pointers (`isExternalSourceRef`). Convert handoff (`queueConvertFromIngest`) and convert queue (`queueConvertJob`) still require explicit `targetEnrollmentId` and `convertJobMayRun`. Convert status stubs (`startConvertJob` / `completeConvertJob`) are metadata-only — success lands in `needs_review`; no ML.
 
 Stub tenancy (`resolveAuthContext`, `assertSameFamily`) is documented in [docs/auth-tenancy.md](../../docs/auth-tenancy.md). **Production auth is blocked / not ready.** This is not an IdP, OIDC, or JWT verifier. No secrets in this package.
 

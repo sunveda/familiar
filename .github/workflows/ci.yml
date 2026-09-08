@@ -18,8 +18,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       # Fail-closed convert + enrollment transitions + review-api guardian stubs
-      # + stub auth-tenancy (packages/shared). Skipping convertJobMayRun tests
-      # when ML lands is a regression.
+      # + stub auth-tenancy + convert queue (packages/shared). Skipping
+      # convertJobMayRun tests when ML lands is a regression.
       - run: npm test
 
   python-stubs:
@@ -32,8 +32,8 @@ jobs:
       - name: Syntax-check ingest and convert stubs
         run: python -m compileall -q apps/ingest/src apps/convert/src
       # Fail-closed convert tests are required. Skipping them when ML lands is a regression.
-      - name: Convert fail-closed tests
-        run: python apps/convert/tests/test_pipeline.py
+      - name: Convert fail-closed and queue stub tests
+        run: python -m unittest discover -s apps/convert/tests -v
       - name: Ingest stub tests
         run: python -m unittest discover -s apps/ingest/tests -v
 
