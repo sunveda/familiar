@@ -11,12 +11,12 @@ Kids never enroll. `KidProfile` is not an enrollment target and must not be used
 2. Consent     Affirmative UI → ConsentRecord (enrollment + inference scopes)
 3. Enroll      Enrollment starts pending → active (opaque artifactRef only)
 4. Ingest      Source video job: register opaque `sourceRef` (outside git); stub stages `queued` → `staged` (no download)
-5. Convert     After staging, explicit per-job `targetEnrollmentId` (chosen enrolled parent) — not automatic
+5. Convert     Queue stub: explicit per-job `targetEnrollmentId` (chosen enrolled parent) + `convertJobMayRun`. Status stubs `queued` → `running` → `needs_review` (no ML)
 6. Review      Job is needs_review; guardian previewReady; no kid access
 7. Kids see    Only after guardian approve (status approved)
 ```
 
-Skipping a step is a bug. Ingest only stages an external ref; it does not pick a convert profile. Convert still requires an explicit `targetEnrollmentId` after staging — multi-profile families are allowed; automatic any↔any pairing is not.
+Skipping a step is a bug. Ingest only stages an external ref; it does not pick a convert profile. Convert queue is stubbed (no inference): it still requires an explicit `targetEnrollmentId` and a passing gate — multi-profile families are allowed; automatic any↔any pairing is not. ML remains out of scope.
 
 ```
 onboard → consent → enroll → ingest (stage ref) → convert (pick profile) → review → kids
@@ -51,4 +51,4 @@ Auth is a **stub** (`mode: 'stub'`): `x-family-id` / `x-guardian-id` are claimed
 
 ## Convert lock (unchanged)
 
-TypeScript `convertJobMayRun` is canonical; Python `queue_convert_job` is the mirror. See [consent-gate.md](./consent-gate.md). Fail closed on revoked, deleted, non-enrolled, missing selection, or wrong family.
+TypeScript `convertJobMayRun` is canonical; Python `queue_convert_job` is the mirror. [`apps/convert`](../apps/convert/) exposes a family-scoped JSON queue (list/get/queue/cancel + status stubs). Queue still fails closed on revoked, deleted, non-enrolled, missing selection, KidProfile targets, or wrong family. See [consent-gate.md](./consent-gate.md).

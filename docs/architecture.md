@@ -28,7 +28,7 @@ This document describes intended service boundaries. **No production ML or biome
 | App | Intended role | This repo |
 | --- | --- | --- |
 | [`apps/ingest`](../apps/ingest/) | Accept upload / URL / library `sourceRef`; stage **outside git** (no download) | Stub |
-| [`apps/convert`](../apps/convert/) | Diarize → voice convert → face swap → mux | Stub only; no models |
+| [`apps/convert`](../apps/convert/) | Diarize → voice convert → face swap → mux | Queue HTTP stub; no models |
 | [`apps/review-api`](../apps/review-api/) | Guardian preview, approve/reject, enrollment revoke | HTTP stub |
 
 Shared domain types: [`packages/shared`](../packages/shared/).
