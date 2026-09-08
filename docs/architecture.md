@@ -56,7 +56,7 @@ A family may enroll many consented profiles. Convert uses the enrollment the use
 5. Convert creates a `Job` of kind `convert` with an explicit `targetEnrollmentId` (chosen enrolled profile).
 6. Review API exposes preview; guardian approval is required before export to kids.
 
-See [consent.md](./consent.md) for policy and [threat-model.md](./threat-model.md) for abuse cases.
+See [guardian-flow.md](./guardian-flow.md) for the caregiver sequence, [consent.md](./consent.md) for policy, and [threat-model.md](./threat-model.md) for abuse cases.
 
 ## Non-goals in this tree
 

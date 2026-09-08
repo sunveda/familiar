@@ -58,6 +58,7 @@ function enrollment(overrides: Partial<Enrollment> = {}): Enrollment {
     artifactRef: null,
     createdAt: at,
     revokedAt: null,
+    deletedAt: null,
     ...overrides,
   };
 }

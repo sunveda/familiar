@@ -28,7 +28,8 @@
         "status": "active",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": null
+        "revokedAt": null,
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",
@@ -67,7 +68,8 @@
         "status": "active",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": null
+        "revokedAt": null,
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",
@@ -106,7 +108,8 @@
         "status": "active",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": null
+        "revokedAt": null,
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",
@@ -145,7 +148,8 @@
         "status": "active",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": null
+        "revokedAt": null,
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",
@@ -184,7 +188,8 @@
         "status": "active",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": null
+        "revokedAt": null,
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",
@@ -223,7 +228,8 @@
         "status": "revoked",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": "2026-02-01T00:00:00.000Z"
+        "revokedAt": "2026-02-01T00:00:00.000Z",
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",
@@ -262,7 +268,8 @@
         "status": "deleted",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": "2026-02-01T00:00:00.000Z"
+        "revokedAt": "2026-02-01T00:00:00.000Z",
+        "deletedAt": "2026-02-01T00:00:00.000Z"
       },
       "consent": {
         "id": "cns_1",
@@ -301,7 +308,8 @@
         "status": "active",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": null
+        "revokedAt": null,
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",
@@ -340,7 +348,8 @@
         "status": "active",
         "artifactRef": null,
         "createdAt": "2026-01-01T00:00:00.000Z",
-        "revokedAt": null
+        "revokedAt": null,
+        "deletedAt": null
       },
       "consent": {
         "id": "cns_1",

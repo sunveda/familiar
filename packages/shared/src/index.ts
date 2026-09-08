@@ -35,3 +35,15 @@ export {
   disabledConvertAbuseHook,
   enrollmentAllowsInference,
 } from './types';
+
+export type { EnrollmentTransitionErrorCode, EnrollmentTransitionResult } from './enrollment';
+
+export {
+  LEGAL_ENROLLMENT_TRANSITIONS,
+  activateEnrollment,
+  canTransitionEnrollment,
+  consentHasEnrollmentScopes,
+  deleteEnrollment,
+  enrollmentScopesForModality,
+  revokeEnrollment,
+} from './enrollment';

@@ -62,4 +62,4 @@ There is no audit store yet. [`AuditEvent`](../packages/shared/src/types.ts) is 
 | `convert_refused` / `convert_queued` | Convert gate refuse or queue |
 | `review_approved` / `review_rejected` | Guardian review decision |
 
-Never put samples, embeddings, or secrets in audit metadata.
+Enrollment status machine: [`packages/shared/src/enrollment.ts`](../packages/shared/src/enrollment.ts) (`pending` → `active` → `revoked` or `deleted`). Guardian sequence: [guardian-flow.md](./guardian-flow.md).

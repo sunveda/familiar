@@ -22,7 +22,7 @@ Guardian account
     → Guardian review before kids see output
 ```
 
-Skipping a step is a bug, not a shortcut.
+Skipping a step is a bug, not a shortcut. Stub UX sequence: [guardian-flow.md](./guardian-flow.md).
 
 ## `ConsentRecord` (see `packages/shared`)
 

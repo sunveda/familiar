@@ -18,6 +18,8 @@ Familiar ingests educational (or other) videos from various sources and re-rende
 
 ## Product flow (draft)
 
+See [docs/guardian-flow.md](./docs/guardian-flow.md) for the stub sequence (onboard → consent → enroll → ingest → convert with an explicit profile pick → review → kids see only after approve).
+
 1. **Guardian onboarding** — create family space, consent, kids profiles
 2. **Enrollment** — capture parent voice samples + face reference under explicit consent
 3. **Ingest** — upload / URL / library source video
@@ -42,7 +44,7 @@ This README is the product source of truth. Implementation stubs and design note
 
 | Path | What it is |
 | --- | --- |
-| [docs/](./docs/README.md) | Architecture, consent, and threat-model stubs |
+| [docs/](./docs/README.md) | Architecture, consent, guardian flow, and threat-model stubs |
 | [apps/](./apps/README.md) | Ingest, convert, and review-api placeholders (no ML) |
 | [packages/shared](./packages/shared/) | Types: Family, Guardian, Enrollment, ConsentRecord, Job |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Consent, enrollment scope, git hygiene, revoke/delete |

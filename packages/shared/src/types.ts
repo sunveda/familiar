@@ -68,6 +68,9 @@ export type EnrollmentStatus = 'pending' | 'active' | 'revoked' | 'deleted';
 /**
  * Metadata for an enrolled parent identity. Artifact bytes are never stored
  * in git or in this object — only an opaque pointer to encrypted storage.
+ *
+ * Status machine: pending → active → revoked | deleted
+ * (see `enrollment.ts`). KidProfile is never an Enrollment.
  */
 export interface Enrollment {
   id: EnrollmentId;
@@ -79,6 +82,8 @@ export interface Enrollment {
   artifactRef: EnrollmentArtifactRef | null;
   createdAt: IsoTimestamp;
   revokedAt: IsoTimestamp | null;
+  /** Set when status becomes `deleted`. Distinct from `revokedAt`. */
+  deletedAt: IsoTimestamp | null;
 }
 
 export interface EnrollmentArtifactRef {
