@@ -43,7 +43,7 @@ Delete **nulls** `artifactRef`. This repo never stores sample bytes.
 
 - List jobs for a family
 - `previewReady` is true only when status is `needs_review` (guardian flag — not kid-visible)
-- Approve / reject transition `needs_review` → `approved` / `rejected` and record **intended** `AuditEvent` emit points (no audit store)
+- Approve / reject transition `needs_review` → `approved` / `rejected` and append `review_*` events to the in-memory `AuditLog` (not durable; see [audit.md](./audit.md))
 - Revoke/delete enrollment then **reuse** canonical `convertJobMayRun` (must be false)
 - **No media.** Preview/media routes return 501 and never stream bytes
 

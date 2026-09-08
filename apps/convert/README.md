@@ -41,7 +41,7 @@ The success path lands in `needs_review` for guardian [review-api](../review-api
 | `POST` | `/jobs/:id/fail` | `running` → `failed` |
 | `POST` | `/jobs/:id/cancel` | `queued` \| `running` → `cancelled` |
 
-Intended `AuditEvent` emit points: `convert_queued` / `convert_refused` (in-memory list for tests; no durable audit store).
+`AuditEvent` emit points: `convert_queued` / `convert_refused` append to an in-memory `AuditLog` (process lifetime; `list_by_family` isolation). Not durable. Never log biometrics. See [docs/audit.md](../../docs/audit.md).
 
 ## Layout
 

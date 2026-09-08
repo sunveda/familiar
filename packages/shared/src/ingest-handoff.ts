@@ -6,6 +6,7 @@
  * KidProfile is never an enrollment target.
  */
 
+import { createAuditEvent, persistAudit, type AuditLog } from './audit';
 import { convertJobMayRun } from './types';
 import type {
   AuditEvent,
@@ -46,6 +47,8 @@ export interface IngestHandoffInput {
   requestedByGuardianId: GuardianId;
   at: IsoTimestamp;
   convertJobId?: string;
+  /** Optional in-memory audit log. Handoff result does not depend on append. */
+  auditLog?: AuditLog;
 }
 
 function intendedAudit(
@@ -55,15 +58,14 @@ function intendedAudit(
   at: IsoTimestamp,
   metadata: AuditEvent['metadata'],
 ): AuditEvent {
-  return {
-    id: `audit_intended_${kind}_${job.id}`,
+  return createAuditEvent({
+    kind,
     familyId: job.familyId,
     actorGuardianId,
-    kind,
     at,
     subjectRef: job.id,
     metadata,
-  };
+  });
 }
 
 /**
@@ -123,6 +125,7 @@ export function queueConvertFromIngest(input: IngestHandoffInput): IngestHandoff
         targetEnrollmentId,
       },
     );
+    persistAudit(input.auditLog, refused);
     return { ok: false, errorCode: 'convert_refused', intendedAudit: refused };
   }
 
@@ -136,5 +139,6 @@ export function queueConvertFromIngest(input: IngestHandoffInput): IngestHandoff
       targetEnrollmentId,
     },
   );
+  persistAudit(input.auditLog, queued);
   return { ok: true, job: convertJob, intendedAudit: queued };
 }

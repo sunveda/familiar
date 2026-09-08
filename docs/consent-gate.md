@@ -53,9 +53,9 @@ Ingest staging does **not** queue convert. After an ingest job is `staged`, conv
 
 Convert may take a **disabled / no-op** abuse hook after the consent gate. Real detection is not implemented. A hook must not allow a job the consent gate refused. Fail-closed consent always wins.
 
-## Intended `AuditEvent` emit points (stub only)
+## `AuditEvent` emit points (in-memory stub)
 
-There is no audit store yet. [`AuditEvent`](../packages/shared/src/types.ts) is metadata-only. When a store exists, emit at least:
+Process-lifetime log: [`createAuditLog`](../packages/shared/src/audit.ts). Not durable. See [audit.md](./audit.md). [`AuditEvent`](../packages/shared/src/types.ts) is metadata-only — never log biometrics. Emit at least:
 
 | Event kind | When |
 | --- | --- |

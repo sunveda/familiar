@@ -271,6 +271,32 @@ class ConvertHandoffTests(unittest.TestCase):
         result = queue_convert_from_ingest(store, "ing_1", "enr_1")
         self.assertEqual(result["errorCode"], "convert_refused")
 
+    def test_handoff_audits_append_and_list_by_family_isolates(self) -> None:
+        store = _staged_store()
+        queued = queue_convert_from_ingest(
+            store, "ing_1", "enr_1", family_id="fam_1", actor_guardian_id="grd_a"
+        )
+        self.assertTrue(queued["ok"])
+        create_ingest_job_in_store(
+            store,
+            family_id="fam_2",
+            guardian_id="grd_2",
+            source_ref="library:demo",
+            job_id="ing_2",
+        )
+        stage_ingest_job(store, "ing_2", family_id="fam_2")
+        refused = queue_convert_from_ingest(
+            store, "ing_2", "enr_1", family_id="fam_2", actor_guardian_id="grd_2"
+        )
+        self.assertEqual(refused["errorCode"], "convert_refused")
+        fam1 = store.list_audits_by_family("fam_1")
+        fam2 = store.list_audits_by_family("fam_2")
+        self.assertEqual(len(fam1), 1)
+        self.assertEqual(fam1[0]["kind"], "convert_queued")
+        self.assertEqual(len(fam2), 1)
+        self.assertEqual(fam2[0]["kind"], "convert_refused")
+        self.assertFalse(any(item["familyId"] == "fam_2" for item in fam1))
+
 
 if __name__ == "__main__":
     unittest.main()

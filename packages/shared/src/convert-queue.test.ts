@@ -6,6 +6,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
+import { createAuditLog } from './audit';
 import {
   cancelConvertJob,
   completeConvertJob,
@@ -330,5 +331,54 @@ describe('convert status stubs (no ML)', () => {
       return;
     }
     assert.equal(result.errorCode, 'wrong_family');
+  });
+});
+
+describe('queueConvertJob audit log', () => {
+  test('appends convert_queued and convert_refused; listByFamily isolates', () => {
+    const log = createAuditLog();
+    const queued = queueConvertJob({
+      familyId: 'fam_1',
+      requestedByGuardianId: 'grd_a',
+      targetEnrollmentId: 'enr_1',
+      enrollment: enrollment(),
+      consent: consent(),
+      kidProfile: undefined,
+      at,
+      convertJobId: 'cvt_1',
+      auditLog: log,
+    });
+    assert.equal(queued.ok, true);
+
+    const refused = queueConvertJob({
+      familyId: 'fam_2',
+      requestedByGuardianId: 'grd_2',
+      targetEnrollmentId: 'enr_1',
+      enrollment: enrollment({ familyId: 'fam_1' }),
+      consent: consent({ familyId: 'fam_1' }),
+      kidProfile: undefined,
+      at,
+      convertJobId: 'cvt_2',
+      auditLog: log,
+    });
+    assert.equal(refused.ok, false);
+    if (refused.ok) {
+      return;
+    }
+    assert.equal(refused.errorCode, 'convert_refused');
+
+    const fam1 = log.listByFamily('fam_1');
+    const fam2 = log.listByFamily('fam_2');
+    assert.equal(fam1.length, 1);
+    assert.equal(fam1[0]?.kind, 'convert_queued');
+    assert.equal(fam1[0]?.subjectRef, 'cvt_1');
+    assert.equal(fam2.length, 1);
+    assert.equal(fam2[0]?.kind, 'convert_refused');
+    assert.equal(
+      fam1.some((item) => item.familyId === 'fam_2'),
+      false,
+    );
+    assert.equal(log.listByJob('cvt_1').length, 1);
+    assert.equal(log.listByJob('cvt_2')[0]?.kind, 'convert_refused');
   });
 });

@@ -41,7 +41,7 @@ Shared domain types: [`packages/shared`](../packages/shared/).
 - **Convert** may run only with an `active` enrollment whose `consentRecordId` is not revoked. Canonical check: `convertJobMayRun` ([consent-gate.md](./consent-gate.md)).
 - **Kids never skip review.** Convert output is `needs_review` until a guardian approves.
 - **KidProfile** is guardian-managed metadata in the family. Kids are **not** enrollment targets in v1.
-- **AuditEvent** is a metadata-only stub (no store). Intended emit points: consent grant/revoke, enrollment revoke/delete, convert refuse/queue, review approve/reject.
+- **AuditEvent** is metadata-only. In-memory `AuditLog` for process lifetime (not durable; production store TBD). Never log biometrics. Emit points: consent grant/revoke, enrollment revoke/delete, convert refuse/queue, review approve/reject. See [audit.md](./audit.md).
 - **Abuse / rate-limit hooks** on convert are disabled no-ops. They must not override fail-closed consent.
 
 ### In-family convert targeting (locked)
