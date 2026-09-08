@@ -47,6 +47,8 @@ A family may enroll any number of consented voice+face profiles. Convert output 
 
 Kids are not enrollment targets in v1 (`KidProfile` is never `targetEnrollmentId`).
 
+Ingest staging does **not** queue convert. After an ingest job is `staged`, convert still requires an explicit `targetEnrollmentId` and this gate (`queueConvertFromIngest` in TypeScript; Python ingest calls `queue_convert_job`).
+
 ## Abuse / rate-limit hooks
 
 Convert may take a **disabled / no-op** abuse hook after the consent gate. Real detection is not implemented. A hook must not allow a job the consent gate refused. Fail-closed consent always wins.

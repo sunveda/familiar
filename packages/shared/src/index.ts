@@ -47,3 +47,13 @@ export {
   enrollmentScopesForModality,
   revokeEnrollment,
 } from './enrollment';
+
+export { EXTERNAL_SOURCE_REF_SCHEMES, isExternalSourceRef } from './source-ref';
+export type { ExternalSourceRefScheme } from './source-ref';
+
+export { queueConvertFromIngest } from './ingest-handoff';
+export type {
+  IngestHandoffErrorCode,
+  IngestHandoffInput,
+  IngestHandoffResult,
+} from './ingest-handoff';

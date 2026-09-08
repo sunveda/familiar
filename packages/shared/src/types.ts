@@ -95,8 +95,19 @@ export interface EnrollmentArtifactRef {
 
 export type JobKind = 'ingest' | 'convert' | 'review';
 
+/**
+ * Ingest stubs use `queued` → `staged` | `failed` (no download).
+ * Convert still starts `queued` after an explicit profile pick.
+ */
 export type JobStatus =
-  'queued' | 'running' | 'needs_review' | 'approved' | 'rejected' | 'failed' | 'cancelled';
+  | 'queued'
+  | 'staged'
+  | 'running'
+  | 'needs_review'
+  | 'approved'
+  | 'rejected'
+  | 'failed'
+  | 'cancelled';
 
 /**
  * Convert jobs MUST set targetEnrollmentId to the enrolled profile the user
@@ -116,6 +127,7 @@ export interface Job {
   status: JobStatus;
   /** Explicit per-job profile choice — never inferred from family membership. */
   targetEnrollmentId: EnrollmentId | null;
+  /** Opaque external pointer (URL/storage placeholder). Never a repo media path. */
   sourceRef: string | null;
   createdAt: IsoTimestamp;
   updatedAt: IsoTimestamp;

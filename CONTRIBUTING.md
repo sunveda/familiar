@@ -39,12 +39,12 @@ Python service stubs are syntax-checked in CI (`python -m compileall`). They do 
 ```bash
 npm test
 python3 apps/convert/tests/test_pipeline.py
-python3 apps/ingest/tests/test_main.py
+python3 -m unittest discover -s apps/ingest/tests
 ```
 
 ## CI: fail-closed convert tests
 
-CI runs TypeScript `convertJobMayRun` tests (`packages/shared`) and Python `queue_convert_job` tests (`apps/convert/tests/test_pipeline.py`) on every PR. Enrollment transition tests and review-api guardian stubs run via `npm test`.
+CI runs TypeScript `convertJobMayRun` tests (`packages/shared`) and Python `queue_convert_job` tests (`apps/convert/tests/test_pipeline.py`) on every PR. Enrollment transition tests, ingest `sourceRef`/handoff tests, and review-api guardian stubs run via `npm test` / ingest unittest.
 
 **Removing or skipping these tests when ML lands is a regression.** Inference must still refuse missing, revoked, cross-family, or unscoped consent/enrollment. Wire models behind the existing gate; do not delete the gate to “get a demo working.”
 

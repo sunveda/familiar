@@ -27,7 +27,7 @@ This document describes intended service boundaries. **No production ML or biome
 
 | App | Intended role | This repo |
 | --- | --- | --- |
-| [`apps/ingest`](../apps/ingest/) | Accept upload / URL / library source; stage media **outside git** | Stub |
+| [`apps/ingest`](../apps/ingest/) | Accept upload / URL / library `sourceRef`; stage **outside git** (no download) | Stub |
 | [`apps/convert`](../apps/convert/) | Diarize → voice convert → face swap → mux | Stub only; no models |
 | [`apps/review-api`](../apps/review-api/) | Guardian preview, approve/reject, enrollment revoke | HTTP stub |
 
@@ -52,8 +52,8 @@ A family may enroll many consented profiles. Convert uses the enrollment the use
 1. Guardian onboarding creates a `Family` and `Guardian`.
 2. Affirmative consent persists a `ConsentRecord`.
 3. Enrollment capture (out of band) creates an `Enrollment` bound to that consent.
-4. Ingest creates a `Job` of kind `ingest`.
-5. Convert creates a `Job` of kind `convert` with an explicit `targetEnrollmentId` (chosen enrolled profile).
+4. Ingest creates a `Job` of kind `ingest`, registers an opaque external `sourceRef`, and stubs staging (`queued` → `staged` / `failed`) **outside git**.
+5. Convert creates a `Job` of kind `convert` only after the caller picks an explicit `targetEnrollmentId` (chosen enrolled profile). Staging does not auto-convert.
 6. Review API exposes preview; guardian approval is required before export to kids.
 
 See [guardian-flow.md](./guardian-flow.md) for the caregiver sequence, [consent.md](./consent.md) for policy, and [threat-model.md](./threat-model.md) for abuse cases.

@@ -34,7 +34,7 @@ jobs:
       - name: Convert fail-closed tests
         run: python apps/convert/tests/test_pipeline.py
       - name: Ingest stub tests
-        run: python apps/ingest/tests/test_main.py
+        run: python -m unittest discover -s apps/ingest/tests -v
 
   git-hygiene:
     runs-on: ubuntu-latest

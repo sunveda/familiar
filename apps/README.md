@@ -4,7 +4,7 @@ Placeholder services for the Familiar pipeline. None of these implement ML, face
 
 | App | Role |
 | --- | --- |
-| [ingest](./ingest/) | Stage source videos (upload / URL / library) |
+| [ingest](./ingest/) | Stage opaque external `sourceRef` (no download; media outside git) |
 | [convert](./convert/) | Intended voice convert + face swap — **stub, fail closed** |
 | [review-api](./review-api/) | Guardian preview and approve/reject |
 
