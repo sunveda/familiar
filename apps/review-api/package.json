@@ -6,6 +6,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsc -p tsconfig.json --outDir dist-test --rootDir ../.. --noEmit false && node --test dist-test/apps/review-api/src/*.test.js",
     "start": "node -e \"console.log('review-api stub: typecheck only; no production server')\""
   },
   "dependencies": {
