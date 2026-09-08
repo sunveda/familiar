@@ -1,0 +1,14 @@
+{
+  "name": "@familiar/review-api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Stub guardian review API. No media or biometrics.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "start": "node -e \"console.log('review-api stub: typecheck only; no production server')\""
+  },
+  "dependencies": {
+    "@familiar/shared": "*"
+  }
+}

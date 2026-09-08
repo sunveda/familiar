@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+
+  python-stubs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax-check ingest and convert stubs
+        run: python -m compileall -q apps/ingest/src apps/convert/src
+      - name: Convert fail-closed tests
+        run: python apps/convert/tests/test_pipeline.py
+      - name: Ingest stub tests
+        run: python apps/ingest/tests/test_main.py
+
+  git-hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refuse tracked secrets, media, models, embeddings
+        run: |
+          set -euo pipefail
+          if git ls-files | grep -E '(^|/)\.env$|\.pt$|\.pth$|\.onnx$|\.safetensors$|\.npy$|\.emb$|\.mp4$|\.wav$'; then
+            echo "Tracked files match forbidden biometric/media/secret patterns."
+            exit 1
+          fi
+          echo "git hygiene ok"

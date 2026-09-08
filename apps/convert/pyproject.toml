@@ -1,0 +1,9 @@
+[project]
+name = "familiar-convert"
+version = "0.0.0"
+description = "Stub: consent-gated convert jobs. No ML models."
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
