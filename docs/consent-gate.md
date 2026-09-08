@@ -36,13 +36,14 @@ A convert job may run only if **all** of these hold:
 
 Otherwise fail closed. Missing data is a refusal, not a skip.
 
-## Open product question (do not invent policy)
+## In-family profile selection (product lock)
 
-**Whether guardian A may run convert targeting guardian B’s enrollment in the same family is undecided.** Needs a product call.
+A family may enroll any number of consented voice+face profiles. Convert output follows the enrollment the user **explicitly chooses** for that job (`targetEnrollmentId`). It is **not** automatic “any family member ↔ any other face.”
 
-- `Job.requestedByGuardianId` and `Enrollment.guardianId` are both present on the types.
-- `convertJobMayRun` / `queue_convert_job` **must not** require those ids to be equal until product decides.
-- Current tests document that a same-family other-guardian requester is **not refused by this gate**. That is not an approval of the product rule.
+- `requestedByGuardianId` **may differ** from `enrollment.guardianId` when both are in the same family (`job.familyId === enrollment.familyId`) and the chosen enrollment is `active` with unrevoked consent that includes `inference_on_family_content`.
+- Cross-family targeting is refused.
+- Missing `targetEnrollmentId` or a revoked/deleted/inactive enrollment is refused.
+- Do **not** add `requestedByGuardianId === enrollment.guardianId`; that would contradict this lock.
 
 Kids are not enrollment targets in v1 (`KidProfile` is never `targetEnrollmentId`).
 

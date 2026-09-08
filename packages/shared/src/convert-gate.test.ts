@@ -113,15 +113,25 @@ describe('convertJobMayRun (explicit)', () => {
     );
   });
 
-  test('does not bind requester to enrollment guardian (OPEN product question)', () => {
-    // Undecided: do not treat this allow as policy. See docs/consent-gate.md.
+  test('allows same-family guardian A targeting guardian B explicit enrollment', () => {
     assert.equal(
       convertJobMayRun(
-        job({ requestedByGuardianId: 'grd_requester' }),
-        enrollment({ guardianId: 'grd_enrolled' }),
-        consent({ guardianId: 'grd_enrolled' }),
+        job({ requestedByGuardianId: 'grd_a' }),
+        enrollment({ guardianId: 'grd_b' }),
+        consent({ guardianId: 'grd_b' }),
       ),
       true,
+    );
+  });
+
+  test('refuses cross-family enrollment selection', () => {
+    assert.equal(convertJobMayRun(job(), enrollment({ familyId: 'fam_other' }), consent()), false);
+  });
+
+  test('refuses missing targetEnrollmentId selection', () => {
+    assert.equal(
+      convertJobMayRun(job({ targetEnrollmentId: null }), enrollment(), consent()),
+      false,
     );
   });
 });

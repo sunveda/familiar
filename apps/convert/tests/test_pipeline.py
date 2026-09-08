@@ -110,11 +110,11 @@ class QueueConvertJobTests(unittest.TestCase):
         with self.assertRaises(ConvertRefused):
             queue_convert_job(_ok(consent_scopes=("voice_enrollment", "face_enrollment")))
 
-    def test_open_question_does_not_bind_requester_to_enrollment_subject(self) -> None:
-        # OPEN: requester may differ from enrollment subject; not a product decision.
-        job = queue_convert_job(_ok(guardian_id="grd_requester"))
+    def test_allows_same_family_guardian_a_targeting_guardian_b(self) -> None:
+        job = queue_convert_job(_ok(guardian_id="grd_a"))
         self.assertEqual(job["status"], "queued")
-        self.assertEqual(job["requestedByGuardianId"], "grd_requester")
+        self.assertEqual(job["requestedByGuardianId"], "grd_a")
+        self.assertEqual(job["targetEnrollmentId"], "enr_1")
 
     def test_consent_fail_closed_wins_over_allowing_abuse_hook(self) -> None:
         with self.assertRaises(ConvertRefused):

@@ -20,8 +20,8 @@ class ConvertRefused(PermissionError):
 @dataclass(frozen=True)
 class ConvertRequest:
     family_id: str
-    # Requester. OPEN PRODUCT QUESTION: may differ from the enrollment subject
-    # in the same family — undecided; this stub does not compare the two.
+    # Requester. Product lock: may differ from the enrollment subject when both
+    # are in this family and enrollment_id is an explicit active consented target.
     guardian_id: str
     enrollment_id: str
     enrollment_family_id: str

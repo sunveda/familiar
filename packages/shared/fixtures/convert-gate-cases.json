@@ -42,10 +42,10 @@
       }
     },
     {
-      "id": "open_same_family_other_guardian_requester",
+      "id": "allows_same_family_explicit_other_guardian_target",
       "expectMayRun": true,
       "appliesTo": ["typescript", "python"],
-      "notes": "OPEN PRODUCT QUESTION: requester !== enrollment.guardianId is not refused today. This is not a product decision.",
+      "notes": "Locked: guardian A may convert targeting guardian B when B's enrollment is the explicit same-family target.",
       "job": {
         "id": "job_1",
         "familyId": "fam_1",

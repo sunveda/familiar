@@ -94,16 +94,14 @@ export type JobStatus =
   'queued' | 'running' | 'needs_review' | 'approved' | 'rejected' | 'failed' | 'cancelled';
 
 /**
- * Convert jobs MUST set targetEnrollmentId to an active enrollment in the
- * same family. Missing or revoked enrollment → fail closed.
+ * Convert jobs MUST set targetEnrollmentId to the enrolled profile the user
+ * **explicitly chose** for that job. A family may have many consented
+ * voice+face enrollments; convert is not automatic pairing of family members.
  *
- * OPEN PRODUCT QUESTION: whether guardian A may run convert targeting
- * guardian B’s enrollment in the same family is undecided. Do not require
- * `requestedByGuardianId === enrollment.guardianId` until product decides.
- * See docs/consent-gate.md.
- *
- * Kids are not enrollment targets in v1 — never set targetEnrollmentId to a
- * KidProfile id.
+ * `requestedByGuardianId` may differ from `enrollment.guardianId` when both
+ * are in the same family (`job.familyId`) and the chosen enrollment is
+ * active with valid consent. Cross-family, revoked, or missing selection
+ * fail closed. Kids are not enrollment targets in v1.
  */
 export interface Job {
   id: JobId;
@@ -111,6 +109,7 @@ export interface Job {
   requestedByGuardianId: GuardianId;
   kind: JobKind;
   status: JobStatus;
+  /** Explicit per-job profile choice — never inferred from family membership. */
   targetEnrollmentId: EnrollmentId | null;
   sourceRef: string | null;
   createdAt: IsoTimestamp;
@@ -190,9 +189,9 @@ export function enrollmentAllowsInference(enrollment: Enrollment): boolean {
  * runtime mirror — keep them aligned via docs/consent-gate.md and
  * packages/shared/fixtures/convert-gate-cases.json.
  *
- * OPEN PRODUCT QUESTION: this function does **not** require
- * `job.requestedByGuardianId === enrollment.guardianId`. Do not add that
- * equality check without a product call.
+ * Product lock: requester may differ from the enrollment subject when they
+ * share `familyId` and `targetEnrollmentId` is an explicit, active, consented
+ * enrollment. Do not require `requestedByGuardianId === enrollment.guardianId`.
  *
  * A disabled abuse hook cannot override a false result from this function.
  */

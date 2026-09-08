@@ -43,17 +43,17 @@ A convert job is allowed only if **all** of the following hold:
 - `job.familyId` equals `enrollment.familyId`
 - `enrollment.status === 'active'`
 - Linked `ConsentRecord` exists, is not revoked, and includes the needed scopes
-- Target identity is the enrolled guardian — not a child, celebrity, or stranger
+- Target identity is an **explicitly selected** enrolled guardian (`targetEnrollmentId`) — not a child, celebrity, or stranger, and not an automatic pick from the family
 
 Otherwise the job fails with a consent/enrollment error. Stubs in `apps/convert` encode this check with no ML attached.
 
 The **canonical** implementation is TypeScript `convertJobMayRun`. Python `queue_convert_job` is the convert-stub **mirror**. See [consent-gate.md](./consent-gate.md) and `packages/shared/fixtures/convert-gate-cases.json` so the two cannot drift in silence.
 
-### Open product question — same-family other guardian
+### In-family convert targeting (locked)
 
-**Undecided:** whether guardian A may run convert targeting guardian B’s enrollment in the same family. This needs a product call. Do not invent a policy here.
+A family can enroll any number of consented voice+face profiles. Guardian A may queue convert targeting guardian B’s enrollment in the **same family** when B’s enrollment is the job’s explicit `targetEnrollmentId`, is `active`, and has valid unrevoked consent (including `inference_on_family_content`).
 
-Engineering today: `convertJobMayRun` / `queue_convert_job` do **not** require `requestedByGuardianId === enrollment.guardianId`. That is a TODO / open question, not an approval.
+`requestedByGuardianId` may differ from `enrollment.guardianId`. Convert does **not** auto-pair family members. Cross-family, revoked, or missing selection fail closed.
 
 ## Revoke / delete
 

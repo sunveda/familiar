@@ -43,9 +43,9 @@ Shared domain types: [`packages/shared`](../packages/shared/).
 - **AuditEvent** is a metadata-only stub (no store). Intended emit points: consent grant/revoke, enrollment revoke/delete, convert refuse/queue, review approve/reject.
 - **Abuse / rate-limit hooks** on convert are disabled no-ops. They must not override fail-closed consent.
 
-### Open product question — convert requester vs enrollment subject
+### In-family convert targeting (locked)
 
-Whether guardian A may queue convert targeting guardian B’s enrollment **in the same family** is **undecided** and needs a product call. Do not encode `requestedByGuardianId === enrollment.guardianId` as policy. See [consent-gate.md](./consent-gate.md).
+A family may enroll many consented profiles. Convert uses the enrollment the user **explicitly selects** (`Job.targetEnrollmentId`). Guardian A may request convert targeting guardian B’s enrollment in the same family; the requester id need not equal the enrollment subject. This is not automatic any-to-any pairing. Cross-family or revoked/missing selection fail closed. See [consent-gate.md](./consent-gate.md).
 
 ## Job flow (draft)
 
@@ -53,7 +53,7 @@ Whether guardian A may queue convert targeting guardian B’s enrollment **in th
 2. Affirmative consent persists a `ConsentRecord`.
 3. Enrollment capture (out of band) creates an `Enrollment` bound to that consent.
 4. Ingest creates a `Job` of kind `ingest`.
-5. Convert creates a `Job` of kind `convert` with `targetEnrollmentId`.
+5. Convert creates a `Job` of kind `convert` with an explicit `targetEnrollmentId` (chosen enrolled profile).
 6. Review API exposes preview; guardian approval is required before export to kids.
 
 See [consent.md](./consent.md) for policy and [threat-model.md](./threat-model.md) for abuse cases.
