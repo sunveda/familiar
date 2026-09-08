@@ -30,7 +30,7 @@ Draft for the scaffold stage. Revisit before any real enrollment capture or infe
 | Secrets or embeddings in git | Ignore rules + CI hygiene; never force-add |
 | Revoked parent still used | Fail closed on `revoked` / `deleted` enrollment |
 | Kid sees output before parent | Jobs stay `needs_review` until guardian approval |
-| Abuse / mass conversion | Rate limits and abuse detection (not implemented in stubs) |
+| Abuse / mass conversion | Rate limits and abuse detection — **hooks only** in stubs (disabled/no-op). Consent fail-closed still wins. |
 | Training on children’s faces | Forbidden for public models (README safety rails) |
 
 ## Fail closed

@@ -37,8 +37,15 @@ Shared domain types: [`packages/shared`](../packages/shared/).
 
 - **Family** is the tenancy unit. Jobs, enrollments, and consent records always carry `familyId`.
 - **Enrollment artifacts** (samples, embeddings) live in an encrypted store referenced by opaque keys. They are not files in this git tree.
-- **Convert** may run only with an `active` enrollment whose `consentRecordId` is not revoked.
+- **Convert** may run only with an `active` enrollment whose `consentRecordId` is not revoked. Canonical check: `convertJobMayRun` ([consent-gate.md](./consent-gate.md)).
 - **Kids never skip review.** Convert output is `needs_review` until a guardian approves.
+- **KidProfile** is guardian-managed metadata in the family. Kids are **not** enrollment targets in v1.
+- **AuditEvent** is a metadata-only stub (no store). Intended emit points: consent grant/revoke, enrollment revoke/delete, convert refuse/queue, review approve/reject.
+- **Abuse / rate-limit hooks** on convert are disabled no-ops. They must not override fail-closed consent.
+
+### In-family convert targeting (locked)
+
+A family may enroll many consented profiles. Convert uses the enrollment the user **explicitly selects** (`Job.targetEnrollmentId`). Guardian A may request convert targeting guardian B’s enrollment in the same family; the requester id need not equal the enrollment subject. This is not automatic any-to-any pairing. Cross-family or revoked/missing selection fail closed. See [consent-gate.md](./consent-gate.md).
 
 ## Job flow (draft)
 
@@ -46,7 +53,7 @@ Shared domain types: [`packages/shared`](../packages/shared/).
 2. Affirmative consent persists a `ConsentRecord`.
 3. Enrollment capture (out of band) creates an `Enrollment` bound to that consent.
 4. Ingest creates a `Job` of kind `ingest`.
-5. Convert creates a `Job` of kind `convert` with `targetEnrollmentId`.
+5. Convert creates a `Job` of kind `convert` with an explicit `targetEnrollmentId` (chosen enrolled profile).
 6. Review API exposes preview; guardian approval is required before export to kids.
 
 See [consent.md](./consent.md) for policy and [threat-model.md](./threat-model.md) for abuse cases.

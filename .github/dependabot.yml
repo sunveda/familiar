@@ -1,0 +1,29 @@
+# Supply-chain updates for this private app. Keep GitHub Actions SHA-pinned
+# (Dependabot rewrites the pin + version comment together).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+
+  # Python stubs have no runtime deps yet; watch the service pyproject.toml files
+  # so new packages cannot land untracked.
+  - package-ecosystem: pip
+    directory: /apps/convert
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: pip
+    directory: /apps/ingest
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

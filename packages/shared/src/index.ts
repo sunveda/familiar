@@ -1,7 +1,12 @@
 export type {
+  AuditEvent,
+  AuditEventId,
+  AuditEventKind,
   ConsentRecord,
   ConsentRecordId,
   ConsentScope,
+  ConvertAbuseHook,
+  ConvertAbuseHookStatus,
   Enrollment,
   EnrollmentArtifactRef,
   EnrollmentId,
@@ -19,6 +24,14 @@ export type {
   JobId,
   JobKind,
   JobStatus,
+  KidProfile,
+  KidProfileId,
+  KidProfileStatus,
 } from './types';
 
-export { consentIsActive, convertJobMayRun, enrollmentAllowsInference } from './types';
+export {
+  consentIsActive,
+  convertJobMayRun,
+  disabledConvertAbuseHook,
+  enrollmentAllowsInference,
+} from './types';
