@@ -17,7 +17,7 @@ Draft for the scaffold stage. Revisit before any real enrollment capture or infe
 - **Git / CI:** source code only. No media, models, embeddings, or secrets ([`.gitignore`](../.gitignore), [SECURITY.md](../SECURITY.md)).
 - **Enrollment store:** encrypted, access-controlled, opaque refs in app DBs.
 - **Convert workers:** may load enrollment artifacts at runtime for **that family only**; must not log raw biometrics.
-- **Review API:** guardian-authenticated; kids do not approve export.
+- **Review API / ingest HTTP:** guardian-authenticated at the stub layer (claimed `guardianId` + `familyId`); kids do not approve export. Future IdP must bind family membership to a verified principal ([auth-tenancy.md](./auth-tenancy.md)).
 
 ## Threats and expected controls
 

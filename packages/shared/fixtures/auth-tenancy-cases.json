@@ -1,0 +1,106 @@
+{
+  "canonical": "packages/shared/src/auth-context.ts",
+  "mirror": "apps/ingest/src/familiar_ingest/auth.py",
+  "notes": "Stub tenancy only. Headers prove nothing cryptographically. Missing principal is reported before missing family. Cross-family mismatch is wrong_family. Shared by TS and Python ingest HTTP.",
+  "cases": [
+    {
+      "id": "happy_path",
+      "guardianId": "grd_1",
+      "familyId": "fam_1",
+      "resourceFamilyId": "fam_1",
+      "expectOk": true,
+      "expectError": null,
+      "notes": "Non-empty ids bound together; resource family matches."
+    },
+    {
+      "id": "happy_path_trimmed",
+      "guardianId": "  grd_1  ",
+      "familyId": " fam_1 ",
+      "resourceFamilyId": "fam_1",
+      "expectOk": true,
+      "expectError": null,
+      "notes": "Whitespace around ids is trimmed."
+    },
+    {
+      "id": "missing_guardian_empty",
+      "guardianId": "",
+      "familyId": "fam_1",
+      "resourceFamilyId": "fam_1",
+      "expectOk": false,
+      "expectError": "missing_guardian",
+      "notes": "Empty guardian is not a principal."
+    },
+    {
+      "id": "missing_guardian_null",
+      "guardianId": null,
+      "familyId": "fam_1",
+      "resourceFamilyId": "fam_1",
+      "expectOk": false,
+      "expectError": "missing_guardian",
+      "notes": "Absent guardian header / field."
+    },
+    {
+      "id": "missing_guardian_whitespace",
+      "guardianId": "   ",
+      "familyId": "fam_1",
+      "resourceFamilyId": "fam_1",
+      "expectOk": false,
+      "expectError": "missing_guardian",
+      "notes": "Whitespace-only guardian is missing."
+    },
+    {
+      "id": "missing_both_reports_guardian",
+      "guardianId": "",
+      "familyId": "",
+      "resourceFamilyId": "fam_1",
+      "expectOk": false,
+      "expectError": "missing_guardian",
+      "notes": "Never accept a family id without a principal; guardian error wins."
+    },
+    {
+      "id": "missing_family_empty",
+      "guardianId": "grd_1",
+      "familyId": "",
+      "resourceFamilyId": "fam_1",
+      "expectOk": false,
+      "expectError": "missing_family",
+      "notes": "Guardian without a family is not a bound tenancy context."
+    },
+    {
+      "id": "missing_family_null",
+      "guardianId": "grd_1",
+      "familyId": null,
+      "resourceFamilyId": "fam_1",
+      "expectOk": false,
+      "expectError": "missing_family",
+      "notes": "Absent family header / field."
+    },
+    {
+      "id": "missing_family_whitespace",
+      "guardianId": "grd_1",
+      "familyId": "  ",
+      "resourceFamilyId": "fam_1",
+      "expectOk": false,
+      "expectError": "missing_family",
+      "notes": "Whitespace-only family is missing."
+    },
+    {
+      "id": "cross_family_mismatch",
+      "guardianId": "grd_1",
+      "familyId": "fam_1",
+      "resourceFamilyId": "fam_other",
+      "expectOk": false,
+      "expectError": "wrong_family",
+      "notes": "Claimed family must match the resource family."
+    },
+    {
+      "id": "empty_resource_family",
+      "guardianId": "grd_1",
+      "familyId": "fam_1",
+      "resourceFamilyId": "",
+      "expectOk": false,
+      "expectError": "wrong_family",
+      "notes": "Missing resource family fails closed."
+    }
+  ]
+}

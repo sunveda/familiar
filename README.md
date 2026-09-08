@@ -44,7 +44,7 @@ This README is the product source of truth. Implementation stubs and design note
 
 | Path | What it is |
 | --- | --- |
-| [docs/](./docs/README.md) | Architecture, consent, guardian flow, and threat-model stubs |
+| [docs/](./docs/README.md) | Architecture, consent, guardian flow, threat-model, and auth/tenancy stubs |
 | [apps/](./apps/README.md) | Ingest, convert, and review-api placeholders (no ML) |
 | [packages/shared](./packages/shared/) | Types: Family, Guardian, Enrollment, ConsentRecord, Job |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Consent, enrollment scope, git hygiene, revoke/delete |

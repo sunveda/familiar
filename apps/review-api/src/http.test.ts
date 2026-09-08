@@ -14,6 +14,8 @@ import { createMemoryStore } from './store';
 
 const at = '2026-01-01T00:00:00.000Z';
 
+const stubAuth = { 'x-family-id': 'fam_1', 'x-guardian-id': 'grd_1' };
+
 function job(overrides: Partial<Job> = {}): Job {
   return {
     id: 'job_1',
@@ -102,7 +104,7 @@ describe('review-api HTTP stubs', () => {
   });
 
   test('GET /families/:id/jobs lists family jobs with previewReady', async () => {
-    const res = await fetch(`${base}/families/fam_1/jobs`);
+    const res = await fetch(`${base}/families/fam_1/jobs`, { headers: stubAuth });
     assert.equal(res.status, 200);
     const body = (await res.json()) as {
       jobs: Array<{ id: string; previewReady: boolean; media: string }>;
@@ -114,6 +116,20 @@ describe('review-api HTTP stubs', () => {
     assert.equal(review?.previewReady, true);
     assert.equal(queued?.previewReady, false);
     assert.equal(review?.media, 'not_served');
+  });
+
+  test('GET /families/:id/jobs refuses URL family that does not match stub context', async () => {
+    const res = await fetch(`${base}/families/fam_2/jobs`, { headers: stubAuth });
+    assert.equal(res.status, 403);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, 'wrong_family');
+  });
+
+  test('family-scoped routes refuse missing stub headers', async () => {
+    const res = await fetch(`${base}/families/fam_1/jobs`);
+    assert.equal(res.status, 401);
+    const body = (await res.json()) as { error: string };
+    assert.equal(body.error, 'missing_guardian');
   });
 
   test('GET /jobs/:id/preview and /media return 501 without bytes', async () => {
@@ -129,7 +145,7 @@ describe('review-api HTTP stubs', () => {
   test('POST /jobs/:id/approve then refuse a second approve', async () => {
     const res = await fetch(`${base}/jobs/job_1/approve`, {
       method: 'POST',
-      headers: { 'x-guardian-id': 'grd_1' },
+      headers: stubAuth,
     });
     assert.equal(res.status, 200);
     const body = (await res.json()) as {
@@ -140,12 +156,18 @@ describe('review-api HTTP stubs', () => {
     assert.equal(body.job.previewReady, false);
     assert.equal(body.intendedAudit.kind, 'review_approved');
 
-    const again = await fetch(`${base}/jobs/job_1/approve`, { method: 'POST' });
+    const again = await fetch(`${base}/jobs/job_1/approve`, {
+      method: 'POST',
+      headers: stubAuth,
+    });
     assert.equal(again.status, 409);
   });
 
   test('POST /jobs/:id/reject on queued job fails closed', async () => {
-    const res = await fetch(`${base}/jobs/job_queued/reject`, { method: 'POST' });
+    const res = await fetch(`${base}/jobs/job_queued/reject`, {
+      method: 'POST',
+      headers: stubAuth,
+    });
     assert.equal(res.status, 409);
     const body = (await res.json()) as { error: string };
     assert.equal(body.error, 'illegal_job_status');
@@ -154,7 +176,7 @@ describe('review-api HTTP stubs', () => {
   test('POST /enrollments/:id/revoke fails closed for convert', async () => {
     const res = await fetch(`${base}/enrollments/enr_1/revoke`, {
       method: 'POST',
-      headers: { 'x-guardian-id': 'grd_1', 'x-family-id': 'fam_1' },
+      headers: stubAuth,
     });
     assert.equal(res.status, 200);
     const body = (await res.json()) as {
@@ -172,14 +194,14 @@ describe('review-api HTTP stubs', () => {
   test('POST /enrollments/:id/revoke wrong family is refused', async () => {
     const res = await fetch(`${base}/enrollments/enr_1/revoke`, {
       method: 'POST',
-      headers: { 'x-family-id': 'fam_other' },
+      headers: { 'x-family-id': 'fam_other', 'x-guardian-id': 'grd_1' },
     });
     assert.equal(res.status, 403);
   });
 
   test('GET job with wrong x-family-id is refused', async () => {
     const res = await fetch(`${base}/jobs/job_fam2`, {
-      headers: { 'x-family-id': 'fam_1' },
+      headers: stubAuth,
     });
     assert.equal(res.status, 403);
   });

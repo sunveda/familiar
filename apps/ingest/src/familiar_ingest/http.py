@@ -1,7 +1,7 @@
 """HTTP stubs for ingest jobs. No media streaming or downloads.
 
-Stub tenancy headers match review-api: `x-family-id`, `x-guardian-id`.
-Auth/IdP is out of scope.
+Stub tenancy: shared `resolve_auth_context_from_headers` (x-family-id /
+x-guardian-id). Not an IdP. See docs/auth-tenancy.md.
 """
 
 from __future__ import annotations
@@ -11,6 +11,12 @@ from http.server import BaseHTTPRequestHandler
 from typing import Any
 from urllib.parse import urlparse
 
+from familiar_ingest.auth import (
+    AuthContext,
+    assert_same_family,
+    http_status_for_auth_error,
+    resolve_auth_context_from_headers,
+)
 from familiar_ingest.jobs import (
     create_ingest_job_in_store,
     fail_ingest_job,
@@ -23,6 +29,8 @@ from familiar_ingest.store import IngestStore
 
 
 def status_for_error(code: str) -> int:
+    if code in {"missing_family", "missing_guardian"}:
+        return http_status_for_auth_error(code)
     if code == "not_found":
         return 404
     if code == "wrong_family":
@@ -31,8 +39,6 @@ def status_for_error(code: str) -> int:
         return 409
     if code in {
         "invalid_source_ref",
-        "missing_family",
-        "missing_guardian",
         "missing_target_enrollment",
         "convert_refused",
     }:
@@ -47,13 +53,6 @@ def _json(handler: BaseHTTPRequestHandler, status: int, body: Any) -> None:
     handler.send_header("content-length", str(len(payload)))
     handler.end_headers()
     handler.wfile.write(payload)
-
-
-def _header(handler: BaseHTTPRequestHandler, name: str) -> str | None:
-    raw = handler.headers.get(name)
-    if raw is None or raw == "":
-        return None
-    return raw
 
 
 def _read_json(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
@@ -71,6 +70,16 @@ def _read_json(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
     return data
 
 
+def _require_stub_auth(handler: BaseHTTPRequestHandler) -> AuthContext | None:
+    result = resolve_auth_context_from_headers(handler.headers)
+    if not result["ok"]:
+        _json(handler, http_status_for_auth_error(str(result["errorCode"])), {"error": result["errorCode"]})
+        return None
+    ctx = result["context"]
+    assert isinstance(ctx, AuthContext)
+    return ctx
+
+
 def create_handler(store: IngestStore) -> type[BaseHTTPRequestHandler]:
     class IngestHandler(BaseHTTPRequestHandler):
         def log_message(self, format: str, *args: object) -> None:  # noqa: A002
@@ -78,7 +87,6 @@ def create_handler(store: IngestStore) -> type[BaseHTTPRequestHandler]:
 
         def do_GET(self) -> None:  # noqa: N802
             path = urlparse(self.path).path.rstrip("/") or "/"
-            family_id = _header(self, "x-family-id")
 
             if path == "/health":
                 _json(
@@ -88,15 +96,23 @@ def create_handler(store: IngestStore) -> type[BaseHTTPRequestHandler]:
                 )
                 return
 
+            ctx = _require_stub_auth(self)
+            if ctx is None:
+                return
+
             family_jobs = _match(path, "/families/", "/jobs")
             if family_jobs is not None:
-                listed = list_family_ingest_jobs(store, family_jobs)
-                _json(self, 200, {"familyId": family_jobs, "jobs": listed, "media": "not_stored"})
+                same = assert_same_family(ctx, family_jobs)
+                if not same["ok"]:
+                    _json(self, 403, {"error": "wrong_family", "familyId": family_jobs})
+                    return
+                listed = list_family_ingest_jobs(store, ctx.family_id)
+                _json(self, 200, {"familyId": ctx.family_id, "jobs": listed, "media": "not_stored"})
                 return
 
             job_id = _match_prefix(path, "/jobs/")
             if job_id is not None and "/" not in job_id:
-                result = get_family_job(store, job_id, family_id)
+                result = get_family_job(store, job_id, ctx.family_id)
                 if not result["ok"]:
                     _json(
                         self,
@@ -111,24 +127,29 @@ def create_handler(store: IngestStore) -> type[BaseHTTPRequestHandler]:
 
         def do_POST(self) -> None:  # noqa: N802
             path = urlparse(self.path).path.rstrip("/") or "/"
-            family_id_header = _header(self, "x-family-id")
-            guardian_id = _header(self, "x-guardian-id")
+            ctx = _require_stub_auth(self)
+            if ctx is None:
+                return
             body = _read_json(self)
 
             family_create = _match(path, "/families/", "/jobs")
             if family_create is not None:
+                same = assert_same_family(ctx, family_create)
+                if not same["ok"]:
+                    _json(self, 403, {"error": "wrong_family", "familyId": family_create})
+                    return
                 source_ref = str(body.get("sourceRef") or "")
                 result = create_ingest_job_in_store(
                     store,
-                    family_id=family_create,
-                    guardian_id=guardian_id or "",
+                    family_id=ctx.family_id,
+                    guardian_id=ctx.guardian_id,
                     source_ref=source_ref,
                 )
                 if not result["ok"]:
                     _json(
                         self,
                         status_for_error(result["errorCode"]),
-                        {"error": result["errorCode"], "familyId": family_create},
+                        {"error": result["errorCode"], "familyId": ctx.family_id},
                     )
                     return
                 _json(self, 201, {"job": result["value"], "media": "not_stored"})
@@ -136,7 +157,7 @@ def create_handler(store: IngestStore) -> type[BaseHTTPRequestHandler]:
 
             stage_id = _match_suffix(path, "/stage")
             if stage_id is not None:
-                result = stage_ingest_job(store, stage_id, family_id=family_id_header)
+                result = stage_ingest_job(store, stage_id, family_id=ctx.family_id)
                 if not result["ok"]:
                     _json(
                         self,
@@ -152,7 +173,7 @@ def create_handler(store: IngestStore) -> type[BaseHTTPRequestHandler]:
                 result = fail_ingest_job(
                     store,
                     fail_id,
-                    family_id=family_id_header,
+                    family_id=ctx.family_id,
                     error_code=str(body.get("errorCode") or "staging_failed"),
                 )
                 if not result["ok"]:
@@ -173,8 +194,8 @@ def create_handler(store: IngestStore) -> type[BaseHTTPRequestHandler]:
                     store,
                     convert_id,
                     target,
-                    family_id=family_id_header,
-                    actor_guardian_id=guardian_id,
+                    family_id=ctx.family_id,
+                    actor_guardian_id=ctx.guardian_id,
                 )
                 if not result["ok"]:
                     payload: dict[str, Any] = {

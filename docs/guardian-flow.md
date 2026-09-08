@@ -47,7 +47,7 @@ Delete **nulls** `artifactRef`. This repo never stores sample bytes.
 - Revoke/delete enrollment then **reuse** canonical `convertJobMayRun` (must be false)
 - **No media.** Preview/media routes return 501 and never stream bytes
 
-Auth/IdP is out of scope. `x-family-id` / `x-guardian-id` headers are stub tenancy only.
+Auth is a **stub** (`mode: 'stub'`): `x-family-id` / `x-guardian-id` are claimed ids, not cryptographic proof. Family-scoped routes require both headers and refuse cross-family mismatch. See [auth-tenancy.md](./auth-tenancy.md). Real IdP is a later slice.
 
 ## Convert lock (unchanged)
 

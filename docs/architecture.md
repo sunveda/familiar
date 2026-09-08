@@ -36,6 +36,7 @@ Shared domain types: [`packages/shared`](../packages/shared/).
 ## Data boundaries
 
 - **Family** is the tenancy unit. Jobs, enrollments, and consent records always carry `familyId`.
+- **Auth (this slice):** shared stub `AuthContext` `{ guardianId, familyId, mode: 'stub' }` — not an IdP. See [auth-tenancy.md](./auth-tenancy.md).
 - **Enrollment artifacts** (samples, embeddings) live in an encrypted store referenced by opaque keys. They are not files in this git tree.
 - **Convert** may run only with an `active` enrollment whose `consentRecordId` is not revoked. Canonical check: `convertJobMayRun` ([consent-gate.md](./consent-gate.md)).
 - **Kids never skip review.** Convert output is `needs_review` until a guardian approves.
@@ -63,3 +64,4 @@ See [guardian-flow.md](./guardian-flow.md) for the caregiver sequence, [consent.
 - Shipping model weights, inference servers, or training code
 - Collecting or storing real biometric data
 - Public identity search or cross-family reuse of enrollments
+- Production IdP / OAuth / JWT verification (stub tenancy only; [auth-tenancy.md](./auth-tenancy.md))

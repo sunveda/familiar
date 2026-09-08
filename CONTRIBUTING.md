@@ -20,7 +20,7 @@ This is a **scaffold**. Do not land real ML models, face/voice pipelines, or col
 | Path | Role |
 | --- | --- |
 | [README.md](./README.md) | Product brief — source of truth |
-| [docs/](./docs/README.md) | Architecture, consent, guardian flow, threat model |
+| [docs/](./docs/README.md) | Architecture, consent, guardian flow, threat model, auth/tenancy |
 | [apps/ingest](./apps/ingest/) | Source video ingest stub |
 | [apps/convert](./apps/convert/) | Convert pipeline stub (no models) |
 | [apps/review-api](./apps/review-api/) | Guardian review/preview API stub |
@@ -44,7 +44,7 @@ python3 -m unittest discover -s apps/ingest/tests
 
 ## CI: fail-closed convert tests
 
-CI runs TypeScript `convertJobMayRun` tests (`packages/shared`) and Python `queue_convert_job` tests (`apps/convert/tests/test_pipeline.py`) on every PR. Enrollment transition tests, ingest `sourceRef`/handoff tests, and review-api guardian stubs run via `npm test` / ingest unittest.
+CI runs TypeScript `convertJobMayRun` tests (`packages/shared`) and Python `queue_convert_job` tests (`apps/convert/tests/test_pipeline.py`) on every PR. Enrollment transition tests, ingest `sourceRef`/handoff tests, **auth-tenancy stub** tests, and review-api guardian stubs run via `npm test` / ingest unittest.
 
 **Removing or skipping these tests when ML lands is a regression.** Inference must still refuse missing, revoked, cross-family, or unscoped consent/enrollment. Wire models behind the existing gate; do not delete the gate to “get a demo working.”
 

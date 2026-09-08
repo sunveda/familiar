@@ -257,6 +257,7 @@ export function deleteEnrollmentInStore(
 
 export const mediaNotServedBody = {
   error: 'not_implemented',
-  detail: 'Preview bytes are not served until auth design. Never stream media from this stub.',
+  detail:
+    'Preview bytes are not served. Auth is stub-only (see docs/auth-tenancy.md). Never stream media from this stub.',
   media: 'not_served',
 } as const;

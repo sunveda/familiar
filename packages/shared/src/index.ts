@@ -57,3 +57,26 @@ export type {
   IngestHandoffInput,
   IngestHandoffResult,
 } from './ingest-handoff';
+
+export {
+  AUTH_STUB_MODE,
+  STUB_FAMILY_ID_HEADER,
+  STUB_GUARDIAN_ID_HEADER,
+  assertSameFamily,
+  httpStatusForAuthError,
+  readStubHeader,
+  resolveAuthContext,
+  resolveAuthContextFromHeaders,
+} from './auth-context';
+export type {
+  AuthContext,
+  AuthMode,
+  AuthResolveErrorCode,
+  AuthResolveResult,
+  ResolveAuthInput,
+  StubHeaderGetter,
+  StubHeaderMap,
+  StubHeaders,
+  NodeLikeHeaders,
+  TenancyContext,
+} from './auth-context';
