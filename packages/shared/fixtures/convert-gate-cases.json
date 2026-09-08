@@ -1,0 +1,357 @@
+{
+  "canonical": "packages/shared/src/types.ts#convertJobMayRun",
+  "mirror": "apps/convert/src/familiar_convert/pipeline.py#queue_convert_job",
+  "cases": [
+    {
+      "id": "allows_active_consented",
+      "expectMayRun": true,
+      "appliesTo": ["typescript", "python"],
+      "notes": "Active enrollment, unrevoked consent with inference scope.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "active",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    },
+    {
+      "id": "open_same_family_other_guardian_requester",
+      "expectMayRun": true,
+      "appliesTo": ["typescript", "python"],
+      "notes": "OPEN PRODUCT QUESTION: requester !== enrollment.guardianId is not refused today. This is not a product decision.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_requester",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_enrolled",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "active",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_enrolled",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    },
+    {
+      "id": "refuses_missing_target_enrollment",
+      "expectMayRun": false,
+      "appliesTo": ["typescript", "python"],
+      "notes": "No target enrollment id.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": null,
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "active",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    },
+    {
+      "id": "refuses_cross_family_enrollment",
+      "expectMayRun": false,
+      "appliesTo": ["typescript", "python"],
+      "notes": "Enrollment belongs to another family.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_other",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "active",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    },
+    {
+      "id": "refuses_revoked_consent",
+      "expectMayRun": false,
+      "appliesTo": ["typescript", "python"],
+      "notes": "Consent withdrawn.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "active",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": "2026-02-01T00:00:00.000Z",
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    },
+    {
+      "id": "refuses_revoked_enrollment",
+      "expectMayRun": false,
+      "appliesTo": ["typescript", "python"],
+      "notes": "Enrollment status revoked.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "revoked",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": "2026-02-01T00:00:00.000Z"
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    },
+    {
+      "id": "refuses_deleted_enrollment",
+      "expectMayRun": false,
+      "appliesTo": ["typescript", "python"],
+      "notes": "Enrollment status deleted.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "deleted",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": "2026-02-01T00:00:00.000Z"
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    },
+    {
+      "id": "refuses_missing_inference_scope",
+      "expectMayRun": false,
+      "appliesTo": ["typescript", "python"],
+      "notes": "Consent lacks inference_on_family_content.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "convert",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "active",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment"]
+      }
+    },
+    {
+      "id": "refuses_non_convert_job",
+      "expectMayRun": false,
+      "appliesTo": ["typescript"],
+      "notes": "TS-only: queue_convert_job is convert-only and has no job.kind.",
+      "job": {
+        "id": "job_1",
+        "familyId": "fam_1",
+        "requestedByGuardianId": "grd_1",
+        "kind": "ingest",
+        "status": "queued",
+        "targetEnrollmentId": "enr_1",
+        "sourceRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "updatedAt": "2026-01-01T00:00:00.000Z",
+        "errorCode": null
+      },
+      "enrollment": {
+        "id": "enr_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "consentRecordId": "cns_1",
+        "modality": "voice_and_face",
+        "status": "active",
+        "artifactRef": null,
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null
+      },
+      "consent": {
+        "id": "cns_1",
+        "familyId": "fam_1",
+        "guardianId": "grd_1",
+        "policyVersion": "stub-0",
+        "grantedAt": "2026-01-01T00:00:00.000Z",
+        "revokedAt": null,
+        "affirmationMethod": "explicit_ui",
+        "scopes": ["voice_enrollment", "face_enrollment", "inference_on_family_content"]
+      }
+    }
+  ]
+}

@@ -5,7 +5,8 @@ Product intent lives in the root [README](../README.md). This folder holds desig
 | Doc | What it covers |
 | --- | --- |
 | [architecture.md](./architecture.md) | Services, data boundaries, job flow |
-| [consent.md](./consent.md) | Enrollment consent, inference rules, revoke/delete |
+| [consent.md](./consent.md) | Enrollment consent, inference rules, revoke/delete, pre-capture legal checklist |
+| [consent-gate.md](./consent-gate.md) | Canonical vs mirrored convert gate; drift table; open product questions |
 | [threat-model.md](./threat-model.md) | Assets, threats, and fail-closed expectations |
 
-When implementation starts, keep these docs aligned with `packages/shared` types (`Family`, `Guardian`, `Enrollment`, `ConsentRecord`, `Job`).
+When implementation starts, keep these docs aligned with `packages/shared` types (`Family`, `Guardian`, `Enrollment`, `ConsentRecord`, `Job`, `KidProfile`, `AuditEvent`).

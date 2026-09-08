@@ -13,7 +13,11 @@ A convert job may be queued only when:
 - Linked `ConsentRecord` is unrevoked and includes `inference_on_family_content`
 - `targetEnrollmentId` is set (enrolled parent in that family only)
 
-Otherwise the stub raises `ConvertRefused`. See [docs/consent.md](../../docs/consent.md).
+Otherwise the stub raises `ConvertRefused`. This function **mirrors** canonical `convertJobMayRun` — see [docs/consent-gate.md](../../docs/consent-gate.md).
+
+A disabled abuse/rate-limit hook may run **after** the consent gate. It cannot allow a refused job. Real detection is not implemented.
+
+OPEN: whether the requester must be the enrollment subject is undecided; this stub does not compare those ids.
 
 ## Layout
 

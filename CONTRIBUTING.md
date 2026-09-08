@@ -36,6 +36,18 @@ npm run lint
 
 Python service stubs are syntax-checked in CI (`python -m compileall`). They do not install ML libraries.
 
+```bash
+npm test
+python3 apps/convert/tests/test_pipeline.py
+python3 apps/ingest/tests/test_main.py
+```
+
+## CI: fail-closed convert tests
+
+CI runs TypeScript `convertJobMayRun` tests (`packages/shared`) and Python `queue_convert_job` tests (`apps/convert/tests/test_pipeline.py`) on every PR.
+
+**Removing or skipping these tests when ML lands is a regression.** Inference must still refuse missing, revoked, cross-family, or unscoped consent/enrollment. Wire models behind the existing gate; do not delete the gate to “get a demo working.”
+
 ## Pull requests
 
 - Keep README as the product source of truth; update it if behavior or safety rails change, and link related docs.

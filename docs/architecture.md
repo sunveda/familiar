@@ -37,8 +37,15 @@ Shared domain types: [`packages/shared`](../packages/shared/).
 
 - **Family** is the tenancy unit. Jobs, enrollments, and consent records always carry `familyId`.
 - **Enrollment artifacts** (samples, embeddings) live in an encrypted store referenced by opaque keys. They are not files in this git tree.
-- **Convert** may run only with an `active` enrollment whose `consentRecordId` is not revoked.
+- **Convert** may run only with an `active` enrollment whose `consentRecordId` is not revoked. Canonical check: `convertJobMayRun` ([consent-gate.md](./consent-gate.md)).
 - **Kids never skip review.** Convert output is `needs_review` until a guardian approves.
+- **KidProfile** is guardian-managed metadata in the family. Kids are **not** enrollment targets in v1.
+- **AuditEvent** is a metadata-only stub (no store). Intended emit points: consent grant/revoke, enrollment revoke/delete, convert refuse/queue, review approve/reject.
+- **Abuse / rate-limit hooks** on convert are disabled no-ops. They must not override fail-closed consent.
+
+### Open product question — convert requester vs enrollment subject
+
+Whether guardian A may queue convert targeting guardian B’s enrollment **in the same family** is **undecided** and needs a product call. Do not encode `requestedByGuardianId === enrollment.guardianId` as policy. See [consent-gate.md](./consent-gate.md).
 
 ## Job flow (draft)
 

@@ -13,6 +13,8 @@ export type GuardianId = string;
 export type EnrollmentId = string;
 export type ConsentRecordId = string;
 export type JobId = string;
+export type KidProfileId = string;
+export type AuditEventId = string;
 
 /** Family space. Jobs, enrollments, and consent are scoped to a family. */
 export interface Family {
@@ -94,6 +96,14 @@ export type JobStatus =
 /**
  * Convert jobs MUST set targetEnrollmentId to an active enrollment in the
  * same family. Missing or revoked enrollment → fail closed.
+ *
+ * OPEN PRODUCT QUESTION: whether guardian A may run convert targeting
+ * guardian B’s enrollment in the same family is undecided. Do not require
+ * `requestedByGuardianId === enrollment.guardianId` until product decides.
+ * See docs/consent-gate.md.
+ *
+ * Kids are not enrollment targets in v1 — never set targetEnrollmentId to a
+ * KidProfile id.
  */
 export interface Job {
   id: JobId;
@@ -108,6 +118,65 @@ export interface Job {
   errorCode: string | null;
 }
 
+/**
+ * Guardian-managed, family-scoped child profile.
+ *
+ * Kids are **not** enrollment targets in v1 (parent voice+face swap only).
+ * Never bind `Job.targetEnrollmentId` to a KidProfile.
+ */
+export interface KidProfile {
+  id: KidProfileId;
+  familyId: FamilyId;
+  /** Display name only — not an identity enrollment. */
+  displayName: string;
+  managedByGuardianId: GuardianId;
+  createdAt: IsoTimestamp;
+  updatedAt: IsoTimestamp;
+  status: KidProfileStatus;
+}
+
+export type KidProfileStatus = 'active' | 'archived';
+
+/**
+ * Metadata-only audit stub. No audit store is implemented in this repo.
+ * Do not put samples, embeddings, or secrets in metadata.
+ *
+ * Intended emit points (see docs/consent-gate.md): consent grant/revoke,
+ * enrollment revoke/delete, convert refuse/queue, review approve/reject.
+ */
+export type AuditEventKind =
+  | 'consent_granted'
+  | 'consent_revoked'
+  | 'enrollment_revoked'
+  | 'enrollment_deleted'
+  | 'convert_refused'
+  | 'convert_queued'
+  | 'review_approved'
+  | 'review_rejected';
+
+export interface AuditEvent {
+  id: AuditEventId;
+  familyId: FamilyId;
+  actorGuardianId: GuardianId | null;
+  kind: AuditEventKind;
+  at: IsoTimestamp;
+  /** Opaque record id (consent, enrollment, job) — never a file path to biometrics. */
+  subjectRef: string | null;
+  metadata: Record<string, string | number | boolean | null>;
+}
+
+/**
+ * Rate-limit / abuse detection hook. Real detection is not implemented.
+ * Convert consent must fail closed even if a future hook would allow.
+ */
+export type ConvertAbuseHookStatus = 'disabled';
+
+export interface ConvertAbuseHook {
+  readonly status: ConvertAbuseHookStatus;
+}
+
+export const disabledConvertAbuseHook: ConvertAbuseHook = { status: 'disabled' };
+
 export function consentIsActive(consent: ConsentRecord): boolean {
   return consent.revokedAt === null;
 }
@@ -116,6 +185,17 @@ export function enrollmentAllowsInference(enrollment: Enrollment): boolean {
   return enrollment.status === 'active';
 }
 
+/**
+ * Canonical fail-closed convert gate. Python `queue_convert_job` is the
+ * runtime mirror — keep them aligned via docs/consent-gate.md and
+ * packages/shared/fixtures/convert-gate-cases.json.
+ *
+ * OPEN PRODUCT QUESTION: this function does **not** require
+ * `job.requestedByGuardianId === enrollment.guardianId`. Do not add that
+ * equality check without a product call.
+ *
+ * A disabled abuse hook cannot override a false result from this function.
+ */
 export function convertJobMayRun(
   job: Job,
   enrollment: Enrollment,
