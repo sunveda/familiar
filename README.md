@@ -36,6 +36,18 @@ Familiar ingests educational (or other) videos from various sources and re-rende
 
 Scaffold / brief stage. Specialist bot: **Familiar**. Coordinate via Chief of Staff.
 
+This README is the product source of truth. Implementation stubs and design notes live alongside it; they must not weaken the safety rails above.
+
+## Repository layout
+
+| Path | What it is |
+| --- | --- |
+| [docs/](./docs/README.md) | Architecture, consent, and threat-model stubs |
+| [apps/](./apps/README.md) | Ingest, convert, and review-api placeholders (no ML) |
+| [packages/shared](./packages/shared/) | Types: Family, Guardian, Enrollment, ConsentRecord, Job |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Consent, enrollment scope, git hygiene, revoke/delete |
+| [SECURITY.md](./SECURITY.md) | Vulnerability reporting and biometric/secret handling |
+
 ## License
 
 Private / proprietary — all rights reserved.
