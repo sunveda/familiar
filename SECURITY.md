@@ -22,6 +22,7 @@ If the issue involves leaked enrollment data or missing consent checks, say so i
 | Identity scope | Inference only against **enrolled** identities in **that family** |
 | Revoke / delete | Guardian can revoke consent and delete enrollment; jobs targeting revoked IDs fail closed |
 | Git hygiene | No biometrics, embeddings, models, media, or `.env` secrets in this repository |
+| Auth | Production auth is **blocked**. Stub tenancy only (`docs/auth-tenancy.md`). No IdP/OIDC/JWT theater; no secrets in git |
 | Kids | No training on kids’ faces for public models; no unsupervised kid accounts |
 
 See [docs/consent.md](./docs/consent.md) and [docs/threat-model.md](./docs/threat-model.md).

@@ -21,6 +21,7 @@ from familiar_ingest.http import create_handler  # noqa: E402
 from familiar_ingest.store import create_memory_store  # noqa: E402
 
 AT = "2026-01-01T00:00:00.000Z"
+STUB_AUTH = {"x-family-id": "fam_1", "x-guardian-id": "grd_1"}
 
 
 def _enrollment() -> dict[str, Any]:
@@ -94,36 +95,49 @@ class IngestHttpTests(unittest.TestCase):
             "POST",
             "/families/fam_1/jobs",
             {"sourceRef": "library:demo"},
-            {"x-guardian-id": "grd_1"},
+            STUB_AUTH,
         )
         self.assertEqual(status, 201)
         job_id = created["job"]["id"]
         self.assertEqual(created["job"]["status"], "queued")
         self.assertEqual(created["media"], "not_stored")
 
-        status, listed = self._json("GET", "/families/fam_1/jobs")
+        status, listed = self._json("GET", "/families/fam_1/jobs", headers=STUB_AUTH)
         self.assertEqual(status, 200)
         self.assertEqual([job["id"] for job in listed["jobs"]], [job_id])
 
-        status, other = self._json("GET", "/families/fam_2/jobs")
+        status, other = self._json(
+            "GET",
+            "/families/fam_2/jobs",
+            headers={"x-family-id": "fam_2", "x-guardian-id": "grd_2"},
+        )
         self.assertEqual(status, 200)
         self.assertEqual(other["jobs"], [])
+
+        status, crossed = self._json("GET", "/families/fam_2/jobs", headers=STUB_AUTH)
+        self.assertEqual(status, 403)
+        self.assertEqual(crossed["error"], "wrong_family")
 
         status, staged = self._json(
             "POST",
             f"/jobs/{job_id}/stage",
             {},
-            {"x-family-id": "fam_1"},
+            STUB_AUTH,
         )
         self.assertEqual(status, 200)
         self.assertEqual(staged["job"]["status"], "staged")
+
+    def test_missing_stub_headers(self) -> None:
+        status, body = self._json("POST", "/families/fam_1/jobs", {"sourceRef": "library:demo"})
+        self.assertEqual(status, 401)
+        self.assertEqual(body["error"], "missing_guardian")
 
     def test_create_refuses_repo_path(self) -> None:
         status, body = self._json(
             "POST",
             "/families/fam_1/jobs",
             {"sourceRef": "./media/foo.mp4"},
-            {"x-guardian-id": "grd_1"},
+            STUB_AUTH,
         )
         self.assertEqual(status, 400)
         self.assertEqual(body["error"], "invalid_source_ref")
@@ -133,10 +147,14 @@ class IngestHttpTests(unittest.TestCase):
             "POST",
             "/families/fam_1/jobs",
             {"sourceRef": "library:demo"},
-            {"x-guardian-id": "grd_1"},
+            STUB_AUTH,
         )
         job_id = created["job"]["id"]
-        status, body = self._json("GET", f"/jobs/{job_id}", headers={"x-family-id": "fam_other"})
+        status, body = self._json(
+            "GET",
+            f"/jobs/{job_id}",
+            headers={"x-family-id": "fam_other", "x-guardian-id": "grd_1"},
+        )
         self.assertEqual(status, 403)
         self.assertEqual(body["error"], "wrong_family")
 
@@ -145,16 +163,16 @@ class IngestHttpTests(unittest.TestCase):
             "POST",
             "/families/fam_1/jobs",
             {"sourceRef": "s3://family-media/key"},
-            {"x-guardian-id": "grd_1"},
+            STUB_AUTH,
         )
         job_id = created["job"]["id"]
-        self._json("POST", f"/jobs/{job_id}/stage", {}, {"x-family-id": "fam_1"})
+        self._json("POST", f"/jobs/{job_id}/stage", {}, STUB_AUTH)
 
         status, missing = self._json(
             "POST",
             f"/jobs/{job_id}/convert",
             {},
-            {"x-family-id": "fam_1", "x-guardian-id": "grd_1"},
+            STUB_AUTH,
         )
         self.assertEqual(status, 400)
         self.assertEqual(missing["error"], "missing_target_enrollment")

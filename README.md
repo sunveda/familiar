@@ -38,13 +38,15 @@ See [docs/guardian-flow.md](./docs/guardian-flow.md) for the stub sequence (onbo
 
 Scaffold / brief stage. Specialist bot: **Familiar**. Coordinate via Chief of Staff.
 
+**Production auth is blocked / not ready** (stub tenancy only — [docs/auth-tenancy.md](./docs/auth-tenancy.md)). No IdP, OIDC, or JWT verification in this tree.
+
 This README is the product source of truth. Implementation stubs and design notes live alongside it; they must not weaken the safety rails above.
 
 ## Repository layout
 
 | Path | What it is |
 | --- | --- |
-| [docs/](./docs/README.md) | Architecture, consent, guardian flow, and threat-model stubs |
+| [docs/](./docs/README.md) | Architecture, consent, guardian flow, threat-model, and auth/tenancy stubs |
 | [apps/](./apps/README.md) | Ingest, convert, and review-api placeholders (no ML) |
 | [packages/shared](./packages/shared/) | Types: Family, Guardian, Enrollment, ConsentRecord, Job |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Consent, enrollment scope, git hygiene, revoke/delete |

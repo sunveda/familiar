@@ -1,7 +1,7 @@
 """Placeholder ingest API.
 
 Does not fetch URLs, write files, or touch biometric data.
-HTTP tenancy headers match review-api (`x-family-id`, `x-guardian-id`).
+HTTP tenancy uses the shared stub (`x-family-id`, `x-guardian-id`). Production auth is blocked. Not an IdP.
 """
 
 from __future__ import annotations

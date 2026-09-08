@@ -45,7 +45,7 @@ A family may enroll any number of consented voice+face profiles. Convert output 
 - Missing `targetEnrollmentId` or a revoked/deleted/inactive enrollment is refused.
 - Do **not** add `requestedByGuardianId === enrollment.guardianId`; that would contradict this lock.
 
-Kids are not enrollment targets in v1 (`KidProfile` is never `targetEnrollmentId`).
+Kids are not enrollment targets in v1 (`KidProfile` is never `targetEnrollmentId`). Auth/tenancy (`AuthContext`) is a **separate** stub — production auth is blocked — and must not weaken this gate. Family isolation stays `assertSameFamily` fail-closed ([auth-tenancy.md](./auth-tenancy.md)).
 
 Ingest staging does **not** queue convert. After an ingest job is `staged`, convert still requires an explicit `targetEnrollmentId` and this gate (`queueConvertFromIngest` in TypeScript; Python ingest calls `queue_convert_job`).
 

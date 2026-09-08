@@ -20,7 +20,8 @@ Convert is **not** automatic after staging. A convert job is queued only when th
 src/familiar_ingest/source_ref.py  # opaque external ref check
 src/familiar_ingest/store.py       # in-memory jobs (no files)
 src/familiar_ingest/jobs.py        # create / list / stage / convert handoff
-src/familiar_ingest/http.py        # JSON stub; x-family-id / x-guardian-id
+src/familiar_ingest/auth.py        # stub AuthContext mirror of packages/shared
+src/familiar_ingest/http.py        # JSON stub; shared tenancy resolver
 src/familiar_ingest/main.py        # convenience create_ingest_job
 tests/                             # family scope, fail-closed convert, no media I/O
 ```
@@ -32,12 +33,12 @@ tests/                             # family scope, fail-closed convert, no media
 | `GET` | `/health` | Liveness (`media: not_stored`) |
 | `GET` | `/families/:familyId/jobs` | List ingest jobs for that family |
 | `POST` | `/families/:familyId/jobs` | Queue ingest; body `{ sourceRef }` |
-| `GET` | `/jobs/:id` | Job JSON; optional `x-family-id` tenancy check |
+| `GET` | `/jobs/:id` | Job JSON; stub tenancy (`x-family-id` must match) |
 | `POST` | `/jobs/:id/stage` | `queued` → `staged` (no download) |
 | `POST` | `/jobs/:id/fail` | `queued` → `failed` |
 | `POST` | `/jobs/:id/convert` | Handoff; body **must** include `targetEnrollmentId` |
 
-Stub headers (not production auth): `x-family-id`, `x-guardian-id`. Same pattern as [review-api](../review-api/).
+Stub headers (**not production auth** — production auth is blocked): **both** `x-family-id` and `x-guardian-id` on family-scoped routes. Same shared resolver as [review-api](../review-api/). Not IdP/OIDC/JWT. No secrets. Family isolation: `assert_same_family`. See [docs/auth-tenancy.md](../../docs/auth-tenancy.md).
 
 ## Tests
 

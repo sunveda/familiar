@@ -17,8 +17,9 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
-      # Fail-closed convert + enrollment transitions + review-api guardian stubs.
-      # Skipping convertJobMayRun tests when ML lands is a regression.
+      # Fail-closed convert + enrollment transitions + review-api guardian stubs
+      # + stub auth-tenancy (packages/shared). Skipping convertJobMayRun tests
+      # when ML lands is a regression.
       - run: npm test
 
   python-stubs:

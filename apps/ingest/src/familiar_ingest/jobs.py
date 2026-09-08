@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from familiar_ingest.auth import resolve_auth_context
 from familiar_ingest.source_ref import is_external_source_ref
 from familiar_ingest.store import IngestStore, Job
 
@@ -56,10 +57,12 @@ def create_ingest_job_in_store(
     job_id: str | None = None,
 ) -> JobResult:
     """Register an opaque external sourceRef. Does not fetch or write media."""
-    if not family_id:
-        return _fail("missing_family")
-    if not guardian_id:
-        return _fail("missing_guardian")
+    auth = resolve_auth_context(guardian_id=guardian_id, family_id=family_id)
+    if not auth["ok"]:
+        return _fail(str(auth["errorCode"]))
+    ctx = auth["context"]
+    family_id = ctx.family_id
+    guardian_id = ctx.guardian_id
     if not is_external_source_ref(source_ref):
         return _fail("invalid_source_ref")
 
