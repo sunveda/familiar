@@ -1,15 +1,15 @@
 """Placeholder ingest API.
 
 Does not fetch URLs, write files, or touch biometric data.
+HTTP tenancy headers match review-api (`x-family-id`, `x-guardian-id`).
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-
-class IngestError(ValueError):
-    """Fail-closed ingest validation error."""
+from familiar_ingest.jobs import IngestError, create_ingest_job_in_store
+from familiar_ingest.store import create_memory_store
 
 
 @dataclass(frozen=True)
@@ -19,21 +19,21 @@ class IngestRequest:
     source_ref: str
 
 
-def create_ingest_job(request: IngestRequest) -> dict[str, str]:
-    """Validate tenancy fields and return a queued job descriptor.
+def create_ingest_job(request: IngestRequest) -> dict[str, object]:
+    """Validate tenancy + external sourceRef and return a queued job descriptor.
 
     Real implementations must stage media outside the git tree.
     """
-    if not request.family_id or not request.guardian_id:
-        raise IngestError("ingest requires family_id and guardian_id")
-    if not request.source_ref:
-        raise IngestError("ingest requires a source_ref")
-
-    return {
-        "kind": "ingest",
-        "status": "queued",
-        "familyId": request.family_id,
-        "requestedByGuardianId": request.guardian_id,
-        "sourceRef": request.source_ref,
-        "targetEnrollmentId": "",
-    }
+    store = create_memory_store()
+    result = create_ingest_job_in_store(
+        store,
+        family_id=request.family_id,
+        guardian_id=request.guardian_id,
+        source_ref=request.source_ref,
+    )
+    if not result["ok"]:
+        raise IngestError(
+            f"ingest refused: {result['errorCode']}",
+            error_code=str(result["errorCode"]),
+        )
+    return result["value"]

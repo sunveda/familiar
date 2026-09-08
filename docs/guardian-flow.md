@@ -10,16 +10,16 @@ Kids never enroll. `KidProfile` is not an enrollment target and must not be used
 1. Onboard     Guardian creates a Family space (and optional KidProfiles)
 2. Consent     Affirmative UI → ConsentRecord (enrollment + inference scopes)
 3. Enroll      Enrollment starts pending → active (opaque artifactRef only)
-4. Ingest      Source video job (media stays outside git)
-5. Convert     Explicit per-job targetEnrollmentId (chosen enrolled parent)
+4. Ingest      Source video job: register opaque `sourceRef` (outside git); stub stages `queued` → `staged` (no download)
+5. Convert     After staging, explicit per-job `targetEnrollmentId` (chosen enrolled parent) — not automatic
 6. Review      Job is needs_review; guardian previewReady; no kid access
 7. Kids see    Only after guardian approve (status approved)
 ```
 
-Skipping a step is a bug. Convert still requires an explicit `targetEnrollmentId` — multi-profile families are allowed; automatic any↔any pairing is not.
+Skipping a step is a bug. Ingest only stages an external ref; it does not pick a convert profile. Convert still requires an explicit `targetEnrollmentId` after staging — multi-profile families are allowed; automatic any↔any pairing is not.
 
 ```
-onboard → consent → enroll → ingest → convert (pick profile) → review → kids
+onboard → consent → enroll → ingest (stage ref) → convert (pick profile) → review → kids
 ```
 
 ## Enrollment status

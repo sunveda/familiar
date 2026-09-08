@@ -6,6 +6,8 @@ TypeScript types for **Family**, **Guardian**, **Enrollment**, **ConsentRecord**
 
 Enrollment status: `pending` → `active` → `revoked` | `deleted`. Activate requires an unrevoked `ConsentRecord` with enrollment scopes. Delete nulls `artifactRef`. See [docs/guardian-flow.md](../../docs/guardian-flow.md).
 
+Ingest `sourceRef` values are opaque external pointers (`isExternalSourceRef`). Convert handoff (`queueConvertFromIngest`) still requires explicit `targetEnrollmentId` and `convertJobMayRun`.
+
 These objects are metadata only. Do not add fields for raw audio, face images, or embedding vectors.
 
 ```ts

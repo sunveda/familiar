@@ -1,0 +1,95 @@
+{
+  "notes": "Opaque external sourceRef only. Repo paths, file: URLs, and empty refs are refused. Shared by TS and Python ingest stubs.",
+  "cases": [
+    {
+      "id": "library_scheme",
+      "sourceRef": "library:demo",
+      "expectOk": true,
+      "notes": "Library placeholder is an external ref, not a git path."
+    },
+    {
+      "id": "https_url",
+      "sourceRef": "https://cdn.example.invalid/lesson",
+      "expectOk": true,
+      "notes": "HTTPS URL placeholder. Stubs must not download it."
+    },
+    {
+      "id": "s3_uri",
+      "sourceRef": "s3://family-media/opaque-key",
+      "expectOk": true,
+      "notes": "Object-store URI placeholder."
+    },
+    {
+      "id": "gs_uri",
+      "sourceRef": "gs://family-media/opaque-key",
+      "expectOk": true,
+      "notes": "GCS URI placeholder."
+    },
+    {
+      "id": "external_scheme",
+      "sourceRef": "external:opaque-id-1",
+      "expectOk": true,
+      "notes": "Generic opaque external pointer."
+    },
+    {
+      "id": "empty",
+      "sourceRef": "",
+      "expectOk": false,
+      "notes": "Empty sourceRef is not a media pointer."
+    },
+    {
+      "id": "whitespace",
+      "sourceRef": "   ",
+      "expectOk": false,
+      "notes": "Whitespace-only is empty after trim."
+    },
+    {
+      "id": "relative_dot",
+      "sourceRef": "./media/foo.mp4",
+      "expectOk": false,
+      "notes": "Relative repo/local path must not be a media store."
+    },
+    {
+      "id": "parent_dir",
+      "sourceRef": "../secret.mp4",
+      "expectOk": false,
+      "notes": "Parent-directory traversal is not an external ref."
+    },
+    {
+      "id": "repo_apps_path",
+      "sourceRef": "apps/ingest/clip.mp4",
+      "expectOk": false,
+      "notes": "Repo-relative path is not an external sourceRef."
+    },
+    {
+      "id": "media_dir",
+      "sourceRef": "media/foo.mp4",
+      "expectOk": false,
+      "notes": "media/ in this tree is gitignored, not an ingest store."
+    },
+    {
+      "id": "posix_absolute",
+      "sourceRef": "/tmp/video.mp4",
+      "expectOk": false,
+      "notes": "Absolute filesystem paths are not opaque external refs."
+    },
+    {
+      "id": "file_url",
+      "sourceRef": "file:///workspace/media/x.mp4",
+      "expectOk": false,
+      "notes": "file: URLs treat the local tree as a media store."
+    },
+    {
+      "id": "windows_path",
+      "sourceRef": "C:\\media\\x.mp4",
+      "expectOk": false,
+      "notes": "Windows paths are local stores, not external refs."
+    },
+    {
+      "id": "bare_filename",
+      "sourceRef": "lesson.mp4",
+      "expectOk": false,
+      "notes": "Bare filenames are repo/cwd relative."
+    }
+  ]
+}
