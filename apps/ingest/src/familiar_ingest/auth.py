@@ -1,7 +1,10 @@
 """Stub auth / tenancy context. Mirror of packages/shared/src/auth-context.ts.
 
-Not an IdP. Headers prove nothing cryptographically. See docs/auth-tenancy.md.
-Keep aligned via packages/shared/fixtures/auth-tenancy-cases.json.
+Production auth is blocked / not ready. This is not an IdP, OIDC provider, or
+JWT verifier. Do not add fake JWT/JWKS/OIDC verification theater. No secrets
+in this module or in git. Family isolation: assert_same_family (fail closed).
+See docs/auth-tenancy.md. Keep aligned via
+packages/shared/fixtures/auth-tenancy-cases.json.
 """
 
 from __future__ import annotations
@@ -9,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping, Protocol
 
-AUTH_STUB_MODE = "stub"
+AUTH_STUB_MODE = "stub"  # Not "idp". Production auth is not ready.
 STUB_FAMILY_ID_HEADER = "x-family-id"
 STUB_GUARDIAN_ID_HEADER = "x-guardian-id"
 
@@ -22,6 +25,8 @@ class _HeaderGetter(Protocol):
 
 @dataclass(frozen=True)
 class AuthContext:
+    """Claimed stub ids only. Production auth is blocked. Not a verified principal."""
+
     guardian_id: str
     family_id: str
     mode: str = AUTH_STUB_MODE
@@ -75,7 +80,10 @@ def resolve_auth_context(
     guardian_id: str | None,
     family_id: str | None,
 ) -> AuthResult:
-    """In-process resolver. Requires non-empty guardian and family ids."""
+    """In-process resolver. Requires non-empty guardian and family ids.
+
+    Does not verify JWT/OIDC or read secrets. Production auth is blocked.
+    """
     guardian = _non_empty_id(guardian_id)
     if not guardian:
         return {"ok": False, "errorCode": "missing_guardian"}
@@ -89,7 +97,10 @@ def resolve_auth_context(
 
 
 def resolve_auth_context_from_headers(headers: Mapping[str, object] | _HeaderGetter) -> AuthResult:
-    """HTTP stub: parse x-guardian-id + x-family-id, then resolve_auth_context."""
+    """HTTP stub: parse x-guardian-id + x-family-id, then resolve_auth_context.
+
+    Not bearer/JWT/OIDC. Anyone who can set headers can claim any pair.
+    """
     return resolve_auth_context(
         guardian_id=read_stub_header(headers, STUB_GUARDIAN_ID_HEADER),
         family_id=read_stub_header(headers, STUB_FAMILY_ID_HEADER),
@@ -97,7 +108,10 @@ def resolve_auth_context_from_headers(headers: Mapping[str, object] | _HeaderGet
 
 
 def assert_same_family(ctx: AuthContext, resource_family_id: str | None) -> AuthResult:
-    """Fail closed: resource family must be non-empty and equal to ctx.family_id."""
+    """Family isolation lock (fail closed): resource family must match ctx.
+
+    Do not skip, default, or treat mismatch as a warning.
+    """
     resource = _non_empty_id(resource_family_id)
     if not resource or resource != ctx.family_id:
         return {"ok": False, "errorCode": "wrong_family"}

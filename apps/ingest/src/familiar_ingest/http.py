@@ -1,7 +1,9 @@
 """HTTP stubs for ingest jobs. No media streaming or downloads.
 
 Stub tenancy: shared `resolve_auth_context_from_headers` (x-family-id /
-x-guardian-id). Not an IdP. See docs/auth-tenancy.md.
+x-guardian-id). Production auth is blocked — not an IdP/OIDC/JWT verifier.
+No secrets. Family isolation: assert_same_family (fail closed).
+See docs/auth-tenancy.md.
 """
 
 from __future__ import annotations
@@ -71,6 +73,7 @@ def _read_json(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
 
 
 def _require_stub_auth(handler: BaseHTTPRequestHandler) -> AuthContext | None:
+    # Claimed headers only. No JWT/OIDC verification (production auth is blocked).
     result = resolve_auth_context_from_headers(handler.headers)
     if not result["ok"]:
         _json(handler, http_status_for_auth_error(str(result["errorCode"])), {"error": result["errorCode"]})

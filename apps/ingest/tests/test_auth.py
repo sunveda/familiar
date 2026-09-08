@@ -1,4 +1,7 @@
-"""Unit tests for stub auth / tenancy. Shared cases with TypeScript."""
+"""Unit tests for stub auth / tenancy. Shared cases with TypeScript.
+
+Production auth is blocked. These tests do not verify JWT/OIDC.
+"""
 
 from __future__ import annotations
 

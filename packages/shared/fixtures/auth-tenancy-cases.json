@@ -1,7 +1,7 @@
 {
   "canonical": "packages/shared/src/auth-context.ts",
   "mirror": "apps/ingest/src/familiar_ingest/auth.py",
-  "notes": "Stub tenancy only. Headers prove nothing cryptographically. Missing principal is reported before missing family. Cross-family mismatch is wrong_family. Shared by TS and Python ingest HTTP.",
+  "notes": "Stub tenancy only. Production auth is blocked (not IdP/OIDC/JWT; no secrets). Headers prove nothing cryptographically. Missing principal is reported before missing family. Cross-family mismatch is wrong_family (assertSameFamily fail-closed). Shared by TS and Python ingest HTTP.",
   "cases": [
     {
       "id": "happy_path",

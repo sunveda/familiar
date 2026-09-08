@@ -2,7 +2,8 @@
  * Placeholder HTTP server. Does not serve video, embeddings, or secrets.
  *
  * `node --experimental-strip-types` is Node 22+; CI typechecks and unit-tests
- * this package. Tenancy uses the shared stub in packages/shared (not an IdP).
+ * this package. Tenancy uses the shared stub (mode: stub). Production auth is
+ * blocked — not an IdP/OIDC/JWT verifier. Family isolation: assertSameFamily.
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
@@ -60,6 +61,7 @@ function statusForFlowError(code: string): number {
 }
 
 function requireStubAuth(req: IncomingMessage, res: ServerResponse): AuthContext | null {
+  // Claimed headers only. No JWT/OIDC verification (production auth is blocked).
   const result = resolveAuthContextFromHeaders(req.headers);
   if (!result.ok) {
     json(res, httpStatusForAuthError(result.errorCode), {

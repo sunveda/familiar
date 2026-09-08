@@ -1,17 +1,23 @@
 /**
  * Stub auth / tenancy context.
  *
- * This is not an IdP. Headers prove nothing cryptographically. See
- * docs/auth-tenancy.md. Convert/enrollment fail-closed gates are separate.
+ * Production auth is blocked / not ready. This is a shared tenancy stub, not an
+ * IdP, OIDC provider, or JWT verifier. Do not add fake JWT/JWKS/OIDC
+ * verification theater. No secrets belong in this module or in git.
+ * Family isolation: `assertSameFamily` (fail closed). See docs/auth-tenancy.md.
  */
 
 import type { FamilyId, GuardianId } from './types';
 
+/** Only value in this slice. Not `'idp'` — production auth is not ready. */
 export const AUTH_STUB_MODE = 'stub' as const;
 
 export type AuthMode = typeof AUTH_STUB_MODE;
 
-/** Bound guardian + family for a request. `mode: 'stub'` is the only value in this slice. */
+/**
+ * Bound guardian + family for a request. `mode: 'stub'` means claimed ids only —
+ * not a verified principal. Production auth is blocked.
+ */
 export interface AuthContext {
   guardianId: GuardianId;
   familyId: FamilyId;
@@ -83,7 +89,8 @@ export function readStubHeader(headers: StubHeaders, name: string): string | und
 
 /**
  * In-process resolver. Requires non-empty guardianId and familyId.
- * Does not look up membership — the stub has no directory.
+ * Does not look up membership, verify JWT/OIDC, or read secrets — there is no
+ * directory and production auth is blocked.
  *
  * Principal is required first: missing guardian is reported even if family is
  * also missing, so a family id is never accepted without a principal.
@@ -103,7 +110,10 @@ export function resolveAuthContext(input: ResolveAuthInput): AuthResolveResult {
   };
 }
 
-/** HTTP stub: parse `x-guardian-id` + `x-family-id`, then `resolveAuthContext`. */
+/**
+ * HTTP stub: parse `x-guardian-id` + `x-family-id`, then `resolveAuthContext`.
+ * Not bearer/JWT/OIDC. Anyone who can set headers can claim any pair.
+ */
 export function resolveAuthContextFromHeaders(headers: StubHeaders): AuthResolveResult {
   return resolveAuthContext({
     guardianId: readStubHeader(headers, STUB_GUARDIAN_ID_HEADER),
@@ -112,7 +122,8 @@ export function resolveAuthContextFromHeaders(headers: StubHeaders): AuthResolve
 }
 
 /**
- * Fail closed: resource family must be non-empty and equal to `ctx.familyId`.
+ * Family isolation lock (fail closed): resource family must be non-empty and
+ * equal to `ctx.familyId`. Do not skip, default, or treat mismatch as a warning.
  * Callers must already have a bound context (principal + family).
  */
 export function assertSameFamily(

@@ -53,3 +53,4 @@ CI runs TypeScript `convertJobMayRun` tests (`packages/shared`) and Python `queu
 - Keep README as the product source of truth; update it if behavior or safety rails change, and link related docs.
 - Prefer types and fail-closed stubs over speculative pipeline code.
 - Describe how the change preserves consent, family-scoped inference, and revoke/delete.
+- Auth is a **stub** (`docs/auth-tenancy.md`). Production auth is blocked. Do not add fake JWT/OIDC/JWKS verification or commit secrets. Keep `assertSameFamily` fail-closed.

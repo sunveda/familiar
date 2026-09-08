@@ -38,6 +38,8 @@ See [docs/guardian-flow.md](./docs/guardian-flow.md) for the stub sequence (onbo
 
 Scaffold / brief stage. Specialist bot: **Familiar**. Coordinate via Chief of Staff.
 
+**Production auth is blocked / not ready** (stub tenancy only — [docs/auth-tenancy.md](./docs/auth-tenancy.md)). No IdP, OIDC, or JWT verification in this tree.
+
 This README is the product source of truth. Implementation stubs and design notes live alongside it; they must not weaken the safety rails above.
 
 ## Repository layout

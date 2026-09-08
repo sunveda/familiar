@@ -38,7 +38,7 @@ tests/                             # family scope, fail-closed convert, no media
 | `POST` | `/jobs/:id/fail` | `queued` → `failed` |
 | `POST` | `/jobs/:id/convert` | Handoff; body **must** include `targetEnrollmentId` |
 
-Stub headers (not production auth): **both** `x-family-id` and `x-guardian-id` on family-scoped routes. Same shared resolver as [review-api](../review-api/). See [docs/auth-tenancy.md](../../docs/auth-tenancy.md).
+Stub headers (**not production auth** — production auth is blocked): **both** `x-family-id` and `x-guardian-id` on family-scoped routes. Same shared resolver as [review-api](../review-api/). Not IdP/OIDC/JWT. No secrets. Family isolation: `assert_same_family`. See [docs/auth-tenancy.md](../../docs/auth-tenancy.md).
 
 ## Tests
 

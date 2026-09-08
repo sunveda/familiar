@@ -2,6 +2,8 @@
  * Unit tests for stub AuthContext / tenancy resolver.
  *
  * Shared cases: ../fixtures/auth-tenancy-cases.json (mirrored in Python ingest).
+ * These tests cover claimed-header parsing and fail-closed family isolation.
+ * They are not JWT/OIDC tests — production auth is blocked.
  */
 
 import assert from 'node:assert/strict';

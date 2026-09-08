@@ -8,7 +8,7 @@ Enrollment status: `pending` → `active` → `revoked` | `deleted`. Activate re
 
 Ingest `sourceRef` values are opaque external pointers (`isExternalSourceRef`). Convert handoff (`queueConvertFromIngest`) still requires explicit `targetEnrollmentId` and `convertJobMayRun`.
 
-Stub tenancy (`resolveAuthContext`, `assertSameFamily`) is documented in [docs/auth-tenancy.md](../../docs/auth-tenancy.md). It is not an IdP.
+Stub tenancy (`resolveAuthContext`, `assertSameFamily`) is documented in [docs/auth-tenancy.md](../../docs/auth-tenancy.md). **Production auth is blocked / not ready.** This is not an IdP, OIDC, or JWT verifier. No secrets in this package.
 
 These objects are metadata only. Do not add fields for raw audio, face images, or embedding vectors.
 
