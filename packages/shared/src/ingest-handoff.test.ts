@@ -5,6 +5,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 
+import { createAuditLog } from './audit';
 import { queueConvertFromIngest } from './ingest-handoff';
 import type { ConsentRecord, Enrollment, Job, KidProfile } from './types';
 
@@ -219,5 +220,45 @@ describe('queueConvertFromIngest', () => {
       at,
     });
     assert.deepEqual(result, { ok: false, errorCode: 'not_found' });
+  });
+
+  test('appends convert_queued / convert_refused and refuses cross-family reads', () => {
+    const log = createAuditLog();
+    const queued = queueConvertFromIngest({
+      ingestJob: ingestJob(),
+      targetEnrollmentId: 'enr_1',
+      enrollment: enrollment(),
+      consent: consent(),
+      kidProfile: undefined,
+      requestedByGuardianId: 'grd_a',
+      at,
+      convertJobId: 'cvt_from_ing',
+      auditLog: log,
+    });
+    assert.equal(queued.ok, true);
+
+    const refused = queueConvertFromIngest({
+      ingestJob: ingestJob({ id: 'ing_2', familyId: 'fam_2' }),
+      targetEnrollmentId: 'enr_1',
+      enrollment: enrollment({ familyId: 'fam_1' }),
+      consent: consent({ familyId: 'fam_1' }),
+      kidProfile: undefined,
+      requestedByGuardianId: 'grd_2',
+      at,
+      convertJobId: 'cvt_refused',
+      auditLog: log,
+    });
+    assert.equal(refused.ok, false);
+
+    const fam1 = log.listByFamily('fam_1');
+    const fam2 = log.listByFamily('fam_2');
+    assert.equal(fam1.length, 1);
+    assert.equal(fam1[0]?.kind, 'convert_queued');
+    assert.equal(fam2.length, 1);
+    assert.equal(fam2[0]?.kind, 'convert_refused');
+    assert.equal(
+      fam1.some((item) => item.familyId === 'fam_2'),
+      false,
+    );
   });
 });

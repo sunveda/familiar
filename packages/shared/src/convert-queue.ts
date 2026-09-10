@@ -7,6 +7,7 @@
  * a convert target. No inference, media, or embeddings.
  */
 
+import { createAuditEvent, persistAudit, type AuditLog } from './audit';
 import { convertJobMayRun } from './types';
 import type {
   AuditEvent,
@@ -50,6 +51,8 @@ export interface ConvertQueueInput {
   sourceRef?: string | null;
   at: IsoTimestamp;
   convertJobId?: string;
+  /** Optional in-memory audit log. Queue result does not depend on append. */
+  auditLog?: AuditLog;
 }
 
 function intendedAudit(
@@ -59,15 +62,14 @@ function intendedAudit(
   at: IsoTimestamp,
   metadata: AuditEvent['metadata'],
 ): AuditEvent {
-  return {
-    id: `audit_intended_${kind}_${job.id}`,
+  return createAuditEvent({
+    kind,
     familyId: job.familyId,
     actorGuardianId,
-    kind,
     at,
     subjectRef: job.id,
     metadata,
-  };
+  });
 }
 
 function asConvertJob(job: Job | undefined, familyId?: FamilyId): ConvertTransitionResult {
@@ -122,6 +124,7 @@ export function queueConvertJob(input: ConvertQueueInput): ConvertQueueResult {
         targetEnrollmentId,
       },
     );
+    persistAudit(input.auditLog, refused);
     return { ok: false, errorCode: 'convert_refused', intendedAudit: refused };
   }
 
@@ -134,6 +137,7 @@ export function queueConvertJob(input: ConvertQueueInput): ConvertQueueResult {
       targetEnrollmentId,
     },
   );
+  persistAudit(input.auditLog, queued);
   return { ok: true, job: convertJob, intendedAudit: queued };
 }
 

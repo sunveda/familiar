@@ -4,7 +4,7 @@ Accepts source videos (upload, URL, or library) and creates `ingest` jobs scoped
 
 **This package does not download, transcode, or store real media.** Callers register an opaque external `sourceRef` (URL or storage placeholder). Staging is metadata-only (`queued` → `staged` / `failed`). Bytes stay outside git.
 
-Convert is **not** automatic after staging. A convert job is queued only when the caller supplies an explicit `targetEnrollmentId` and canonical `convertJobMayRun` (Python mirror: `queue_convert_job`) passes.
+Convert is **not** automatic after staging. A convert job is queued only when the caller supplies an explicit `targetEnrollmentId` and canonical `convertJobMayRun` (Python mirror: `queue_convert_job`) passes. Handoff appends `convert_queued` / `convert_refused` to an in-memory audit log (not durable; never log biometrics). See [docs/audit.md](../../docs/audit.md).
 
 ## Rules
 

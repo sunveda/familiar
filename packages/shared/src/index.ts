@@ -82,6 +82,25 @@ export {
   resolveAuthContext,
   resolveAuthContextFromHeaders,
 } from './auth-context';
+
+export {
+  AUDIT_EVENT_KINDS,
+  FORBIDDEN_AUDIT_KEYS,
+  createAuditEvent,
+  createAuditLog,
+  isForbiddenAuditKey,
+  persistAudit,
+  validateAuditEvent,
+} from './audit';
+export type {
+  AuditAppendErrorCode,
+  AuditAppendResult,
+  AuditLog,
+  CreateAuditEventInput,
+} from './audit';
+
+export { grantConsent, revokeConsent } from './consent';
+export type { ConsentMutationErrorCode, ConsentMutationResult, GrantConsentInput } from './consent';
 export type {
   AuthContext,
   AuthMode,

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from familiar_ingest.audit import AuditLog
+
 Job = dict[str, Any]
 Enrollment = dict[str, Any]
 Consent = dict[str, Any]
@@ -26,7 +28,7 @@ class IngestStore:
         self._enrollments: dict[str, Enrollment] = {}
         self._consents: dict[str, Consent] = {}
         self._kid_profiles: dict[str, KidProfile] = {}
-        self._audits: list[AuditEvent] = []
+        self._audit = AuditLog()
         self._seq = 0
 
         for job in jobs or []:
@@ -80,11 +82,17 @@ class IngestStore:
     def put_kid_profile(self, kid: KidProfile) -> None:
         self._kid_profiles[str(kid["id"])] = dict(kid)
 
-    def record_intended_audit(self, event: AuditEvent) -> None:
-        self._audits.append(dict(event))
+    def record_intended_audit(self, event: AuditEvent) -> dict[str, Any]:
+        return self._audit.append(event)
 
     def intended_audits(self) -> list[AuditEvent]:
-        return [dict(event) for event in self._audits]
+        return self._audit.list_all()
+
+    def list_audits_by_family(self, family_id: str) -> list[AuditEvent]:
+        return self._audit.list_by_family(family_id)
+
+    def list_audits_by_job(self, job_id: str) -> list[AuditEvent]:
+        return self._audit.list_by_job(job_id)
 
 
 def create_memory_store(**seed: Any) -> IngestStore:

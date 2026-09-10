@@ -154,11 +154,12 @@ export interface KidProfile {
 export type KidProfileStatus = 'active' | 'archived';
 
 /**
- * Metadata-only audit stub. No audit store is implemented in this repo.
- * Do not put samples, embeddings, or secrets in metadata.
+ * Metadata-only audit event. In-memory process-lifetime log: `createAuditLog`
+ * in `audit.ts`. Not durable; a production store is TBD.
+ * Do not put samples, embeddings, media bytes, or secrets in metadata.
  *
- * Intended emit points (see docs/consent-gate.md): consent grant/revoke,
- * enrollment revoke/delete, convert refuse/queue, review approve/reject.
+ * Emit points (see docs/audit.md): consent grant/revoke, enrollment
+ * revoke/delete, convert refuse/queue, review approve/reject.
  */
 export type AuditEventKind =
   | 'consent_granted'

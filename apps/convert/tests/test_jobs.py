@@ -289,6 +289,35 @@ class ConvertStatusStubTests(unittest.TestCase):
         result = start_convert_job(store, "cvt_1", family_id="fam_other")
         self.assertEqual(result, {"ok": False, "errorCode": "wrong_family"})
 
+    def test_queue_and_refuse_append_and_list_by_family_isolates(self) -> None:
+        store = _store()
+        queued = queue_convert_job_in_store(
+            store,
+            family_id="fam_1",
+            guardian_id="grd_a",
+            target_enrollment_id="enr_1",
+            at=AT,
+            job_id="cvt_1",
+        )
+        self.assertTrue(queued["ok"])
+        refused = queue_convert_job_in_store(
+            store,
+            family_id="fam_2",
+            guardian_id="grd_2",
+            target_enrollment_id="enr_1",
+            at=AT,
+            job_id="cvt_2",
+        )
+        self.assertEqual(refused["errorCode"], "convert_refused")
+        fam1 = store.list_audits_by_family("fam_1")
+        fam2 = store.list_audits_by_family("fam_2")
+        self.assertEqual(len(fam1), 1)
+        self.assertEqual(fam1[0]["kind"], "convert_queued")
+        self.assertEqual(len(fam2), 1)
+        self.assertEqual(fam2[0]["kind"], "convert_refused")
+        self.assertFalse(any(item["familyId"] == "fam_2" for item in fam1))
+        self.assertEqual(store.list_audits_by_job("cvt_1")[0]["kind"], "convert_queued")
+
 
 if __name__ == "__main__":
     unittest.main()

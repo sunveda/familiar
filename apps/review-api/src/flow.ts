@@ -1,11 +1,15 @@
 /**
- * Guardian review stubs: list, preview-ready, approve/reject, revoke/delete.
- * No media bytes. Audit events are intended emit points only (no audit store).
+ * Guardian review stubs: list, preview-ready, approve/reject, revoke/delete,
+ * consent grant/revoke. No media bytes. Audit events append to the shared
+ * in-memory AuditLog (process lifetime; not durable).
  */
 
 import {
   convertJobMayRun,
+  createAuditEvent,
   deleteEnrollment,
+  grantConsent,
+  revokeConsent,
   revokeEnrollment,
   type AuditEvent,
   type ConsentRecord,
@@ -31,7 +35,8 @@ export type FlowErrorCode =
   | 'wrong_family'
   | 'consent_revoked'
   | 'consent_not_bound'
-  | 'missing_enrollment_scopes';
+  | 'missing_enrollment_scopes'
+  | 'missing_required_field';
 
 export type FlowResult<T> = { ok: true; value: T } | { ok: false; errorCode: FlowErrorCode };
 
@@ -54,15 +59,14 @@ function intendedAudit(
   at: IsoTimestamp,
   metadata: AuditEvent['metadata'],
 ): AuditEvent {
-  return {
-    id: `audit_intended_${kind}_${jobOrEnrollment.id}`,
+  return createAuditEvent({
+    kind,
     familyId: jobOrEnrollment.familyId,
     actorGuardianId,
-    kind,
     at,
     subjectRef: jobOrEnrollment.id,
     metadata,
-  };
+  });
 }
 
 function fail(errorCode: FlowErrorCode): FlowResult<never> {
@@ -251,6 +255,72 @@ export function deleteEnrollmentInStore(
       intendedAudit: event,
       convertJobMayRun: mayRun,
       convertJobs: 'fail_closed',
+    },
+  };
+}
+
+export function grantConsentInStore(
+  store: ReviewStore,
+  input: {
+    id: string;
+    familyId: FamilyId;
+    guardianId: GuardianId;
+    policyVersion: string;
+    scopes: ConsentRecord['scopes'];
+    at: IsoTimestamp;
+  },
+  expectedFamilyId?: FamilyId,
+): FlowResult<{ consent: ConsentRecord; intendedAudit: AuditEvent }> {
+  if (expectedFamilyId !== undefined && input.familyId !== expectedFamilyId) {
+    return fail('wrong_family');
+  }
+  const result = grantConsent(input);
+  if (!result.ok) {
+    return fail(result.errorCode);
+  }
+  store.putConsent(result.consent);
+  store.recordIntendedAudit(result.intendedAudit);
+  return { ok: true, value: { consent: result.consent, intendedAudit: result.intendedAudit } };
+}
+
+export function revokeConsentInStore(
+  store: ReviewStore,
+  consentId: string,
+  at: IsoTimestamp,
+  actorGuardianId: GuardianId | null,
+  familyId?: FamilyId,
+): FlowResult<{
+  consent: ConsentRecord;
+  intendedAudit: AuditEvent;
+  convertJobMayRun: boolean;
+}> {
+  const current = store.getConsent(consentId);
+  if (!current) {
+    return fail('not_found');
+  }
+  const result = revokeConsent(current, at, familyId !== undefined ? { familyId } : undefined);
+  if (!result.ok) {
+    return fail(result.errorCode);
+  }
+  store.putConsent(result.consent);
+  const event = createAuditEvent({
+    kind: 'consent_revoked',
+    familyId: result.consent.familyId,
+    actorGuardianId,
+    at,
+    subjectRef: result.consent.id,
+    metadata: {
+      alreadyRevoked: current.revokedAt !== null,
+    },
+  });
+  store.recordIntendedAudit(event);
+  return {
+    ok: true,
+    value: {
+      consent: result.consent,
+      intendedAudit: event,
+      // Revoked consent cannot pass convertJobMayRun (fail closed).
+      convertJobMayRun: false,
     },
   };
 }

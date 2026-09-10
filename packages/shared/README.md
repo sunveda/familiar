@@ -2,7 +2,7 @@
 
 TypeScript types for **Family**, **Guardian**, **Enrollment**, **ConsentRecord**, **Job**, **KidProfile**, and **AuditEvent**, plus fail-closed helpers (`convertJobMayRun`, enrollment transitions, stub `AuthContext` / tenancy).
 
-`KidProfile` is guardian-managed and family-scoped; kids are **not** enrollment targets in v1. `AuditEvent` is metadata only (no audit store).
+`KidProfile` is guardian-managed and family-scoped; kids are **not** enrollment targets in v1. `AuditEvent` is metadata only; `createAuditLog` is an in-memory process-lifetime list (not durable). Never put samples, embeddings, or secrets in audit metadata. See [docs/audit.md](../../docs/audit.md).
 
 Enrollment status: `pending` → `active` → `revoked` | `deleted`. Activate requires an unrevoked `ConsentRecord` with enrollment scopes. Delete nulls `artifactRef`. See [docs/guardian-flow.md](../../docs/guardian-flow.md).
 
