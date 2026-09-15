@@ -4,6 +4,10 @@
 
 Familiar ingests educational (or other) videos from various sources and re-renders them so a **registered, consented parent** appears and speaks — voice conversion + face/identity swap — instead of the original presenter.
 
+## Agent handoff
+
+Living status for coding agents: **[docs/CONTEXT.md](docs/CONTEXT.md)**. Operating rules: **[AGENTS.md](AGENTS.md)**.
+
 ## Goals
 
 - Better learning / comfort for kids when content feels like Mom/Dad
@@ -40,13 +44,15 @@ Scaffold / brief stage. Specialist bot: **Familiar**. Coordinate via Chief of St
 
 **Production auth is blocked / not ready** (stub tenancy only — [docs/auth-tenancy.md](./docs/auth-tenancy.md)). No IdP, OIDC, or JWT verification in this tree.
 
+As of **2026-09-15**, active SunVeda eng focus is elsewhere; treat this repo as **CONTEXT-only** until the owner reopens Familiar. See [docs/CONTEXT.md](docs/CONTEXT.md).
+
 This README is the product source of truth. Implementation stubs and design notes live alongside it; they must not weaken the safety rails above.
 
 ## Repository layout
 
 | Path | What it is |
 | --- | --- |
-| [docs/](./docs/README.md) | Architecture, consent, guardian flow, threat-model, and auth/tenancy stubs |
+| [docs/](./docs/README.md) | Architecture, consent, guardian flow, threat-model, auth/tenancy stubs, and living [CONTEXT.md](./docs/CONTEXT.md) |
 | [apps/](./apps/README.md) | Ingest, convert, and review-api placeholders (no ML) |
 | [packages/shared](./packages/shared/) | Types: Family, Guardian, Enrollment, ConsentRecord, Job |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Consent, enrollment scope, git hygiene, revoke/delete |
