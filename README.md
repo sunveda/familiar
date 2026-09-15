@@ -4,6 +4,13 @@
 
 Familiar ingests educational (or other) videos from various sources and re-renders them so a **registered, consented parent** appears and speaks — voice conversion + face/identity swap — instead of the original presenter.
 
+## Agent / handoff context
+
+**Start here:** [docs/CONTEXT.md](docs/CONTEXT.md) — living status for any agent or human.  
+Update that file **daily while this repo is active**, and on every major direction change (SunVeda rule for all projects).
+
+Also: [AGENTS.md](AGENTS.md)
+
 ## Goals
 
 - Better learning / comfort for kids when content feels like Mom/Dad
@@ -36,11 +43,18 @@ See [docs/guardian-flow.md](./docs/guardian-flow.md) for the stub sequence (onbo
 
 ## Status
 
-Scaffold / brief stage. Specialist bot: **Familiar**. Coordinate via Chief of Staff.
+See [docs/CONTEXT.md](docs/CONTEXT.md) for current PR / hold / blocker detail. Specialist bot: **Familiar**. Coordinate via Chief of Staff.
 
 **Production auth is blocked / not ready** (stub tenancy only — [docs/auth-tenancy.md](./docs/auth-tenancy.md)). No IdP, OIDC, or JWT verification in this tree.
 
+As of 2026-09-15, feature work is **held** (SunVeda dual focus: jkk-watch + Learn AI Now). CONTEXT hygiene only until CoS resumes.
+
 This README is the product source of truth. Implementation stubs and design notes live alongside it; they must not weaken the safety rails above.
+
+## Docs
+
+- [**CONTEXT (living handoff)**](docs/CONTEXT.md)
+- [docs/](./docs/README.md) — architecture, consent, guardian flow, threat-model, and auth/tenancy stubs
 
 ## Repository layout
 
