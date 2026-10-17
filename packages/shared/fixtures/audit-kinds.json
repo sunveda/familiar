@@ -1,0 +1,43 @@
+{
+  "notes": "Single source for AuditEventKind values and forbidden metadata keys. TS (packages/shared/src/audit.ts, types.ts) and Python mirrors (apps/convert, apps/ingest audit.py) must all match. Adding a kind: update types.ts, audit.ts, both audit.py files, and this fixture in one change; the parity tests fail otherwise.",
+  "kinds": [
+    "consent_granted",
+    "consent_revoked",
+    "enrollment_revoked",
+    "enrollment_deleted",
+    "convert_refused",
+    "convert_queued",
+    "review_approved",
+    "review_rejected",
+    "artifact_stored",
+    "artifact_access_denied"
+  ],
+  "forbiddenKeys": [
+    "embedding",
+    "embeddings",
+    "sample",
+    "samples",
+    "samplebytes",
+    "audio",
+    "audiobytes",
+    "wav",
+    "face",
+    "facebytes",
+    "faceimage",
+    "image",
+    "imagebytes",
+    "video",
+    "media",
+    "mediabytes",
+    "privatekey",
+    "secret",
+    "password",
+    "token",
+    "apikey",
+    "credential",
+    "npy",
+    "onnx",
+    "weights",
+    "model"
+  ]
+}

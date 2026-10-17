@@ -40,3 +40,7 @@ Convert still fail-closes via `convertJobMayRun` / `queue_convert_job` **before*
 ## Production store (out of scope)
 
 When a durable sink exists, keep the same event shape and forbidden-key checks. Do not weaken consent, convert, or enrollment gates to “get audit working.”
+
+## Kind parity (TS ↔ Python)
+
+`packages/shared/fixtures/audit-kinds.json` lists the allowed `AuditEventKind` values and forbidden metadata keys. TS (`audit.test` parity test) and the Python mirrors in `apps/convert` and `apps/ingest` (`test_audit_parity.py`) fail if `types.ts`, `audit.ts`, either `audit.py`, or the fixture diverge. Adding a kind (for example `artifact_stored` / `artifact_access_denied` from the enrollment artifact store work) means updating all of them in one change.
