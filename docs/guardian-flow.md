@@ -45,7 +45,7 @@ Delete **nulls** `artifactRef`. This repo never stores sample bytes.
 - `previewReady` is true only when status is `needs_review` (guardian flag — not kid-visible)
 - Approve / reject transition `needs_review` → `approved` / `rejected` and append `review_*` events to the in-memory `AuditLog` (not durable; see [audit.md](./audit.md))
 - Revoke/delete enrollment then **reuse** canonical `convertJobMayRun` (must be false)
-- **No media.** Preview/media routes return 501 and never stream bytes
+- **No media.** Preview/media routes authenticate and family-check first (401 → 404 → 403) and then return 501; they never stream bytes
 
 Auth is a **stub** (`mode: 'stub'`): `x-family-id` / `x-guardian-id` are claimed ids, not cryptographic proof. **Production auth is blocked / not ready** (no IdP, OIDC, or JWT verification). Family-scoped routes require both headers and refuse cross-family mismatch (`assertSameFamily`). See [auth-tenancy.md](./auth-tenancy.md).
 

@@ -61,7 +61,7 @@ The stub skips steps 1–3 and takes both ids from the caller. That is why `mode
 
 1. **Never trust a client-supplied family id without binding it to a principal.** The stub binds by requiring **both** `guardianId` and `familyId` together (`resolveAuthContext`). A family header or URL segment alone is not an auth context.
 2. **Cross-family access is refused.** After a context exists, `assertSameFamily(ctx, resourceFamilyId)` must pass. Wrong family → `wrong_family` (HTTP 403). Missing/empty ids → `missing_guardian` or `missing_family` (HTTP 401).
-3. Family-scoped HTTP routes (list/create jobs, get/stage/fail/convert, convert run/complete/cancel, approve/reject, enrollment revoke/delete) go through the shared resolver. Health stays public. Preview/media stay **501** and never stream bytes.
+3. Family-scoped HTTP routes (list/create jobs, get/stage/fail/convert, convert run/complete/cancel, approve/reject, enrollment revoke/delete) go through the shared resolver. Health stays public. Preview/media run the same stub auth first (401 missing ids → 404 unknown job → 403 other family) and only then answer **501**; they never stream bytes.
 4. Convert/enrollment gates stay fail closed: explicit `targetEnrollmentId`, same-family scope, `KidProfile` never an enrollment target. Auth-tenancy does not override `convertJobMayRun`.
 
 Canonical helpers:

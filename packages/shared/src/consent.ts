@@ -79,7 +79,9 @@ export function grantConsent(input: GrantConsentInput): ConsentMutationResult {
 
 /**
  * Withdraw consent. Idempotent when already revoked. Wrong-family fails closed.
- * Does not mutate enrollments — convert already fails closed on revoked consent.
+ * Pure consent transition: does not touch enrollments. The cascade to bound
+ * enrollments lives in review-api `revokeConsentInStore`; convert also fails
+ * closed on revoked consent regardless.
  */
 export function revokeConsent(
   consent: ConsentRecord,

@@ -1,5 +1,7 @@
 # Threat model (stub)
 
+> Superseded for detail by [security-and-threat-model.md](./security-and-threat-model.md). Kept for inbound links.
+
 Draft for the scaffold stage. Revisit before any real enrollment capture or inference.
 
 ## Assets
