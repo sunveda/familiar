@@ -6,6 +6,12 @@ from familiar_convert.auth import (
     resolve_auth_context,
     resolve_auth_context_from_headers,
 )
+from familiar_convert.backend import (
+    ConvertBackend,
+    MockBackend,
+    StageContext,
+    StageResult,
+)
 from familiar_convert.http import create_handler
 from familiar_convert.jobs import (
     cancel_convert_job,
@@ -23,15 +29,20 @@ from familiar_convert.pipeline import (
     DisabledConvertAbuseHook,
     queue_convert_job,
 )
+from familiar_convert.runner import run_convert_job
 from familiar_convert.store import ConvertStore, create_memory_store
 
 __all__ = [
     "AuthContext",
     "ConvertAbuseHook",
+    "ConvertBackend",
     "ConvertRefused",
     "ConvertRequest",
     "ConvertStore",
     "DisabledConvertAbuseHook",
+    "MockBackend",
+    "StageContext",
+    "StageResult",
     "assert_same_family",
     "cancel_convert_job",
     "complete_convert_job",
@@ -43,6 +54,7 @@ __all__ = [
     "queue_convert_job",
     "queue_convert_job_in_store",
     "resolve_auth_context",
+    "run_convert_job",
     "resolve_auth_context_from_headers",
     "start_convert_job",
 ]
