@@ -8,7 +8,9 @@
     "convert_refused",
     "convert_queued",
     "review_approved",
-    "review_rejected"
+    "review_rejected",
+    "artifact_stored",
+    "artifact_access_denied"
   ],
   "forbiddenKeys": [
     "embedding",

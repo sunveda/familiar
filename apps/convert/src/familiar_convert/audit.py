@@ -20,6 +20,8 @@ AUDIT_EVENT_KINDS = frozenset(
         "convert_queued",
         "review_approved",
         "review_rejected",
+        "artifact_stored",
+        "artifact_access_denied",
     }
 )
 
