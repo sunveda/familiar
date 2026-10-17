@@ -10,6 +10,7 @@ Product intent and safety rails live in the root [README](../README.md). Living 
 | [state-machines.md](./state-machines.md) | Enrollment, ingest job, convert job state diagrams, guards, exact `convertJobMayRun` checks |
 | [data-model.md](./data-model.md) | Entities, invariants, ER diagram, what is never stored |
 | [api-contracts.md](./api-contracts.md) | review-api, ingest, convert routes as implemented; stub auth headers; status codes; OpenAPI as future |
+| [web-client.md](./web-client.md) | Reference web client (`apps/web`): rules, layout, commands |
 | [clients.md](./clients.md) | **Planned** web, iOS, Android clients: shared contract, capture/upload, review and consent UX, store policy flags, stack |
 | [security-and-threat-model.md](./security-and-threat-model.md) | STRIDE, misuse, consent abuse, kids privacy, provenance, keys, incident runbook |
 | [development.md](./development.md) | Setup, commands, CI jobs, branching/PR rules, adding a slice, spike procedure |

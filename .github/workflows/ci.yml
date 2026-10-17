@@ -21,6 +21,8 @@ jobs:
       # + stub auth-tenancy + convert queue (packages/shared). Skipping
       # convertJobMayRun tests when ML lands is a regression.
       - run: npm test
+      # Reference web client (apps/web): typecheck+test run above via workspaces; build here.
+      - run: npm run build -w @familiar/web
 
   python-stubs:
     runs-on: ubuntu-latest
