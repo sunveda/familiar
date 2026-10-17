@@ -283,6 +283,21 @@ export function grantConsentInStore(
   return { ok: true, value: { consent: result.consent, intendedAudit: result.intendedAudit } };
 }
 
+/**
+ * Withdraw consent and cascade to every enrollment bound to it (fail closed).
+ *
+ * - Family-scoped: only enrollments in the consent's family are touched; an
+ *   enrollment in another family that points at this consent id is left alone
+ *   (it already fails `convertJobMayRun` on `familyId` mismatch).
+ * - Uses the existing `revokeEnrollment` semantics: status `revoked`,
+ *   `revokedAt` set, `artifactRef` retained as an opaque pointer so the
+ *   guardian-driven delete can still purge bytes. `deleted` is terminal and
+ *   skipped. Revoked enrollments never pass the convert gate.
+ * - Idempotent: repeating the call changes nothing further, but still repairs
+ *   any enrollment bound to the consent that is somehow not yet revoked.
+ * - All transitions are computed before any write; a failure writes nothing.
+ * - Audit events are metadata only (no artifact keys).
+ */
 export function revokeConsentInStore(
   store: ReviewStore,
   consentId: string,
@@ -292,6 +307,8 @@ export function revokeConsentInStore(
 ): FlowResult<{
   consent: ConsentRecord;
   intendedAudit: AuditEvent;
+  revokedEnrollments: Enrollment[];
+  enrollmentAudits: AuditEvent[];
   convertJobMayRun: boolean;
 }> {
   const current = store.getConsent(consentId);
@@ -302,7 +319,39 @@ export function revokeConsentInStore(
   if (!result.ok) {
     return fail(result.errorCode);
   }
+
+  const planned: { before: Enrollment; after: Enrollment }[] = [];
+  for (const enrollment of store.listEnrollmentsByConsent(consentId)) {
+    if (enrollment.familyId !== result.consent.familyId) {
+      continue;
+    }
+    if (enrollment.status === 'revoked' || enrollment.status === 'deleted') {
+      continue;
+    }
+    const revoked = revokeEnrollment(enrollment, at, { familyId: result.consent.familyId });
+    if (!revoked.ok) {
+      return fail(revoked.errorCode);
+    }
+    planned.push({ before: enrollment, after: revoked.enrollment });
+  }
+
   store.putConsent(result.consent);
+  const revokedEnrollments: Enrollment[] = [];
+  const enrollmentAudits: AuditEvent[] = [];
+  for (const { before, after } of planned) {
+    store.putEnrollment(after);
+    revokedEnrollments.push(after);
+    const audit = intendedAudit('enrollment_revoked', after, actorGuardianId, at, {
+      previousStatus: before.status,
+      newStatus: after.status,
+      cause: 'consent_revoked',
+      consentRecordId: result.consent.id,
+      convertJobMayRun: false,
+    });
+    store.recordIntendedAudit(audit);
+    enrollmentAudits.push(audit);
+  }
+
   const event = createAuditEvent({
     kind: 'consent_revoked',
     familyId: result.consent.familyId,
@@ -311,6 +360,7 @@ export function revokeConsentInStore(
     subjectRef: result.consent.id,
     metadata: {
       alreadyRevoked: current.revokedAt !== null,
+      enrollmentsRevoked: revokedEnrollments.length,
     },
   });
   store.recordIntendedAudit(event);
@@ -319,6 +369,8 @@ export function revokeConsentInStore(
     value: {
       consent: result.consent,
       intendedAudit: event,
+      revokedEnrollments,
+      enrollmentAudits,
       // Revoked consent cannot pass convertJobMayRun (fail closed).
       convertJobMayRun: false,
     },

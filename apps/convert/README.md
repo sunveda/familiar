@@ -43,6 +43,10 @@ The success path lands in `needs_review` for guardian [review-api](../review-api
 
 `AuditEvent` emit points: `convert_queued` / `convert_refused` append to an in-memory `AuditLog` (process lifetime; `list_by_family` isolation). Not durable. Never log biometrics. See [docs/audit.md](../../docs/audit.md).
 
+## Backend interface (mock only)
+
+`backend.py` defines a `ConvertBackend` Protocol with explicit `voice_stage` then `face_stage`, and a `MockBackend` that returns deterministic placeholder metadata (no media, no ML). `runner.run_convert_job` re-runs the fail-closed gate (`queue_convert_job`) against current store state before **every** backend call; a refusal cancels the job, records `convert_refused`, and never invokes the backend. Backend exceptions become `failed` with a code only.
+
 ## Layout
 
 ```
@@ -50,9 +54,20 @@ src/familiar_convert/pipeline.py  # convertJobMayRun mirror
 src/familiar_convert/auth.py      # stub AuthContext mirror of packages/shared
 src/familiar_convert/store.py     # in-memory jobs (no files)
 src/familiar_convert/jobs.py      # queue / list / status stubs
+src/familiar_convert/backend.py   # ConvertBackend protocol + MockBackend
+src/familiar_convert/runner.py    # gate-first runner
+src/familiar_convert/server.py      # python -m familiar_convert entry point
 src/familiar_convert/http.py      # JSON stub; shared tenancy resolver
 tests/                            # fail-closed gate + family-scoped queue
 ```
+
+## Run (stub server)
+
+```bash
+PYTHONPATH=apps/convert/src python3 -m familiar_convert   # http://127.0.0.1:8001
+```
+
+Stdlib only, loopback by default, stub auth headers. See [docs/python-services.md](../../docs/python-services.md).
 
 ## Tests
 

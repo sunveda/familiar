@@ -59,8 +59,17 @@ A family can enroll any number of consented voice+face profiles. Guardian A may 
 
 | Action | Effect |
 | --- | --- |
-| Revoke consent | `ConsentRecord.revokedAt` set; related enrollments become `revoked`; in-flight convert jobs cancel or fail |
+| Revoke consent | `ConsentRecord.revokedAt` set; **every** enrollment in the same family bound to that consent becomes `revoked` (cascade, see below); convert jobs fail closed at the gate |
 | Delete enrollment | Status `deleted`; artifact bytes deleted from the enrollment store; refs must not remain usable |
+
+### Consent revoke cascade (review-api `revokeConsentInStore`)
+
+- Scope: enrollments with `consentRecordId` equal to the revoked consent **and** the same `familyId`. Enrollments bound to other consents are untouched. An enrollment in another family that happens to reference the id is never modified (it already fails the convert gate on family mismatch).
+- Transition: existing `revokeEnrollment` semantics (`pending|active → revoked`, `revokedAt` set). `artifactRef` is retained as an opaque pointer so the guardian-driven delete can still purge stored bytes; `deleted` is terminal and skipped.
+- Fail closed: all transitions are computed before any write; a wrong-family request returns `wrong_family` and mutates nothing. A revoked consent or revoked enrollment never passes `convertJobMayRun`.
+- Idempotent: repeating revoke keeps the original `revokedAt` values and emits no extra `enrollment_revoked` events, but still revokes any bound enrollment that is somehow not yet revoked.
+- Audit (metadata only): one `consent_revoked` (`alreadyRevoked`, `enrollmentsRevoked`) plus one `enrollment_revoked` per cascaded enrollment (`cause: consent_revoked`, `consentRecordId`, previous/new status). No artifact keys.
+- Not yet implemented: cancelling already-running convert jobs (they fail closed at the next gate check) and deleting artifact bytes automatically.
 
 Deletion of enrollment artifacts is a product requirement, not a best-effort cleanup. Git must never have been a store for those bytes ([SECURITY.md](../SECURITY.md)).
 
