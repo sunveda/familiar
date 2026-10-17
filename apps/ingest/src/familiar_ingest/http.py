@@ -30,6 +30,9 @@ from familiar_ingest.jobs import (
 from familiar_ingest.store import IngestStore
 
 
+MAX_BODY_BYTES = 64 * 1024
+
+
 def status_for_error(code: str) -> int:
     if code in {"missing_family", "missing_guardian"}:
         return http_status_for_auth_error(code)
@@ -63,10 +66,17 @@ def _read_json(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
         length = int(length_raw)
     except ValueError:
         length = 0
+    if length > MAX_BODY_BYTES:
+        # Fail closed: do not read oversized bodies; routes then refuse the empty body.
+        return {}
     raw = handler.rfile.read(length) if length > 0 else b""
     if not raw:
         return {}
-    data = json.loads(raw.decode("utf-8"))
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except ValueError:
+        # Malformed JSON / bad UTF-8 is treated as an empty body (routes refuse it).
+        return {}
     if not isinstance(data, dict):
         return {}
     return data

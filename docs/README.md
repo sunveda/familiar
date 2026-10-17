@@ -10,6 +10,7 @@ Product intent lives in the root [README](../README.md). This folder holds desig
 | [consent.md](./consent.md) | Enrollment consent, inference rules, revoke/delete, pre-capture legal checklist |
 | [consent-gate.md](./consent-gate.md) | Canonical vs mirrored convert gate; explicit in-family profile selection |
 | [threat-model.md](./threat-model.md) | Assets, threats, and fail-closed expectations |
+| [python-services.md](./python-services.md) | Run the convert/ingest stub servers (stdlib, loopback, stub auth) |
 | [audit.md](./audit.md) | In-memory AuditLog: metadata only, not durable, never log biometrics |
 
 When implementation starts, keep these docs aligned with `packages/shared` types (`Family`, `Guardian`, `Enrollment`, `ConsentRecord`, `Job`, `KidProfile`, `AuditEvent`, stub `AuthContext`).

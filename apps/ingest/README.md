@@ -21,6 +21,7 @@ src/familiar_ingest/source_ref.py  # opaque external ref check
 src/familiar_ingest/store.py       # in-memory jobs (no files)
 src/familiar_ingest/jobs.py        # create / list / stage / convert handoff
 src/familiar_ingest/auth.py        # stub AuthContext mirror of packages/shared
+src/familiar_ingest/server.py      # python -m familiar_ingest entry point
 src/familiar_ingest/http.py        # JSON stub; shared tenancy resolver
 src/familiar_ingest/main.py        # convenience create_ingest_job
 tests/                             # family scope, fail-closed convert, no media I/O
@@ -39,6 +40,14 @@ tests/                             # family scope, fail-closed convert, no media
 | `POST` | `/jobs/:id/convert` | Handoff; body **must** include `targetEnrollmentId` |
 
 Stub headers (**not production auth** — production auth is blocked): **both** `x-family-id` and `x-guardian-id` on family-scoped routes. Same shared resolver as [review-api](../review-api/). Not IdP/OIDC/JWT. No secrets. Family isolation: `assert_same_family`. See [docs/auth-tenancy.md](../../docs/auth-tenancy.md).
+
+## Run (stub server)
+
+```bash
+PYTHONPATH=apps/ingest/src python3 -m familiar_ingest   # http://127.0.0.1:8002
+```
+
+Stdlib only, loopback by default, stub auth headers. See [docs/python-services.md](../../docs/python-services.md).
 
 ## Tests
 
