@@ -4,11 +4,12 @@
   "description": "Private parent voice+face swap for kids' learning videos (consented guardians only).",
   "workspaces": [
     "packages/*",
-    "apps/review-api"
+    "apps/review-api",
+    "apps/web"
   ],
   "scripts": {
-    "lint": "prettier --check \"**/*.{js,ts,json,yml,yaml}\"",
-    "format": "prettier --write \"**/*.{js,ts,json,yml,yaml}\"",
+    "lint": "prettier --check \"**/*.{js,ts,tsx,css,json,yml,yaml}\"",
+    "format": "prettier --write \"**/*.{js,ts,tsx,css,json,yml,yaml}\"",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present"
   },
