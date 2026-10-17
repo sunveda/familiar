@@ -16,6 +16,7 @@ Product intent and safety rails live in the root [README](../README.md). Living 
 | [testing.md](./testing.md) | Suites, fail-closed tests, fixtures |
 | [roadmap.md](./roadmap.md) | Done, in flight, blocked, next, owner decisions |
 | [adr/](./adr/README.md) | Architecture decision records 0001 to 0009 |
+| [python-services.md](./python-services.md) | Run the convert/ingest stub servers (stdlib, loopback, stub auth) |
 
 ## Policy and design notes (earlier)
 

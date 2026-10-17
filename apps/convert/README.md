@@ -56,9 +56,18 @@ src/familiar_convert/store.py     # in-memory jobs (no files)
 src/familiar_convert/jobs.py      # queue / list / status stubs
 src/familiar_convert/backend.py   # ConvertBackend protocol + MockBackend
 src/familiar_convert/runner.py    # gate-first runner
+src/familiar_convert/server.py      # python -m familiar_convert entry point
 src/familiar_convert/http.py      # JSON stub; shared tenancy resolver
 tests/                            # fail-closed gate + family-scoped queue
 ```
+
+## Run (stub server)
+
+```bash
+PYTHONPATH=apps/convert/src python3 -m familiar_convert   # http://127.0.0.1:8001
+```
+
+Stdlib only, loopback by default, stub auth headers. See [docs/python-services.md](../../docs/python-services.md).
 
 ## Tests
 

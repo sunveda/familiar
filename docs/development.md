@@ -21,6 +21,8 @@ python3 -m unittest discover -s apps/convert/tests -v
 python3 -m unittest discover -s apps/ingest/tests -v
 ```
 
+Run the Python stub servers locally: see [python-services.md](./python-services.md).
+
 `.env.example` is the only env file in git; copy to `.env` locally (ignored). Never commit `.env`, keys, media, models, embeddings.
 
 ## Layout

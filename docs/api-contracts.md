@@ -25,14 +25,14 @@ Derived from code in [`apps/review-api/src/index.ts`](../apps/review-api/src/ind
 | `403` | `wrong_family`. |
 | `404` | `not_found` (record missing, or wrong `kind` for the service, or unknown route). |
 | `409` | `illegal_job_status`, `illegal_transition`, `already_deleted` (review-api); `illegal_job_status`, `kid_profile_not_target` (Python). |
-| `501` | Review-api media/preview routes, always. |
+| `501` | Review-api media/preview routes, only after stub auth, job lookup and family check pass (order 401 → 404 → 403 → 501). |
 
 ## 2. review-api (TypeScript)
 
 | Method | Path | Auth | Success | Errors |
 | --- | --- | --- | --- | --- |
 | GET | `/health` | none | `200 {"ok":true,"service":"review-api","ml":false,"media":"not_served"}` | none |
-| GET | `/jobs/:id/media`, `/jobs/:id/preview` | **none (checked before auth)** | n/a | **always `501`** `{"error":"not_implemented","detail":"…","media":"not_served","jobId":"…"}` |
+| GET | `/jobs/:id/media`, `/jobs/:id/preview` | stub (401 missing ids → 404 unknown job → 403 other family) | n/a | **`501` only after those checks pass** `{"error":"not_implemented","detail":"…","media":"not_served","jobId":"…"}` |
 | GET | `/families/:familyId/jobs` | stub | `200 {"familyId","jobs":[GuardianJobView]}` (all job kinds in that family) | 401, 403 |
 | GET | `/jobs/:id` | stub | `200 GuardianJobView` | 401, 403, 404 |
 | POST | `/jobs/:id/approve` | stub | `200 {"job","intendedAudit","note"}` | 401, 403, 404, 409 |
@@ -46,9 +46,9 @@ Error bodies: job routes `{"error":"…","jobId":"…"}`; enrollment routes `{"e
 
 Caveats, stated plainly:
 
-- The `501` media route precedes auth, so it reveals nothing but also is not itself guarded. When real media is served, it must be behind guardian auth ([ADR 0008](./adr/0008-guardian-review-before-release.md)).
+- Media/preview routes authenticate first (401 → 404 → 403) and then answer `501`; no bytes are ever served. When real media is served, it stays behind guardian auth ([ADR 0008](./adr/0008-guardian-review-before-release.md)).
 - Approve/reject require only a same-family caller; there is no check that the caller is a guardian record (no directory exists) and no kid/guardian distinction beyond claimed headers.
-- `consent` grant/revoke logic exists as functions (`grantConsentInStore`, `revokeConsentInStore`) but has **no HTTP route**. Enrollment create/activate also has none.
+- `consent` grant/revoke logic exists as functions (`grantConsentInStore`, `revokeConsentInStore`) but has **no HTTP route**. Revoking consent cascades to every bound same-family enrollment (see [consent.md](./consent.md)). Enrollment create/activate also has none.
 - `convertJobMayRun` in revoke/delete responses is computed via a probe job; after revoke/delete it is `false`.
 
 Example, approve:
@@ -147,4 +147,4 @@ All **planned**:
 - Unify response envelopes (ingest bare job vs convert wrapped), structured error schema, pagination, idempotency keys on POST.
 - Replace stub headers with IdP-verified bearer tokens; derive `guardianId`/`familyId` from the token, never from client-supplied headers.
 - New endpoints: family/guardian/kid-profile management, consent grant/revoke, enrollment create/activate with capture upload sessions, presigned upload initiation and completion, job output preview/stream (guardian-auth only), release.
-- Rate limiting, malformed-body handling (`400`), and moving the unauthenticated `501` media route behind auth.
+- Rate limiting and malformed-body handling (`400`).

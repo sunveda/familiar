@@ -26,7 +26,7 @@ stateDiagram-v2
 
 Illegal by design: anything → `pending` (create-only); `deleted → *` (terminal); `revoked → active` (no reactivation, create a new enrollment). Artifact bytes deletion exists in the stub store merged in PR #24 (best-effort overwrite; crypto-erase planned) but is not yet wired to the review-api; today the API only nulls the pointer.
 
-Consent revocation (`revokeConsent`) does **not** mutate enrollments. Convert fails closed because `convertJobMayRun` checks consent directly. [consent.md](./consent.md) describes related enrollments becoming `revoked`; that cascade is **not implemented** in code (planned).
+Consent revocation in review-api (`revokeConsentInStore`) cascades: every same-family enrollment bound to that consent becomes `revoked` (see [consent.md](./consent.md)). The pure `revokeConsent` helper alone only sets `revokedAt`; convert still fails closed because `convertJobMayRun` checks consent directly.
 
 ## 2. Ingest job (`kind: 'ingest'`)
 
