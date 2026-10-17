@@ -13,14 +13,14 @@ Guardian sequence: [docs/guardian-flow.md](../../docs/guardian-flow.md). Convert
 | `GET` | `/health` | Liveness |
 | `GET` | `/families/:familyId/jobs` | List jobs for that family (`previewReady` if `needs_review`) |
 | `GET` | `/jobs/:id` | Job status + `previewReady`; stub tenancy (`x-family-id` must match) |
-| `GET` | `/jobs/:id/preview` | **501** — never streams preview bytes |
-| `GET` | `/jobs/:id/media` | **501** — never streams media |
+| `GET` | `/jobs/:id/preview` | Auth first: 401 → 404 → 403 → **501** (never streams preview bytes) |
+| `GET` | `/jobs/:id/media` | Same ordering as preview; **501** only after auth + family check |
 | `POST` | `/jobs/:id/approve` | `needs_review` → `approved`; appends `review_approved` |
 | `POST` | `/jobs/:id/reject` | `needs_review` → `rejected`; appends `review_rejected` |
 | `POST` | `/enrollments/:id/revoke` | Shared state machine + fail closed for convert |
 | `POST` | `/enrollments/:id/delete` | Status `deleted`; `artifactRef` nulled; convert fail closed |
 
-Stub headers (**not production auth** — production auth is blocked): **both** `x-family-id` and `x-guardian-id` on family-scoped routes. Parsed by `@familiar/shared` `resolveAuthContextFromHeaders`. Cross-family → 403 (`assertSameFamily`); missing ids → 401. Health is public. Preview/media stay 501. Do not add JWT/OIDC verification here.
+Stub headers (**not production auth** — production auth is blocked): **both** `x-family-id` and `x-guardian-id` on family-scoped routes. Parsed by `@familiar/shared` `resolveAuthContextFromHeaders`. Cross-family → 403 (`assertSameFamily`); missing ids → 401. Health is public. Preview/media authenticate and authorize **before** answering 501 (401 missing ids → 404 unknown job → 403 other family → 501); they never stream bytes. Do not add JWT/OIDC verification here.
 
 In-memory store only. `AuditEvent`s append to the shared in-memory `AuditLog` (process lifetime, family-isolated `listByFamily`). Not durable; never log biometrics. See [docs/audit.md](../../docs/audit.md).
 

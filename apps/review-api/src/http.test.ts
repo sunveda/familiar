@@ -132,14 +132,69 @@ describe('review-api HTTP stubs', () => {
     assert.equal(body.error, 'missing_guardian');
   });
 
-  test('GET /jobs/:id/preview and /media return 501 without bytes', async () => {
-    for (const path of ['/jobs/job_1/preview', '/jobs/job_1/media']) {
-      const res = await fetch(`${base}${path}`);
-      assert.equal(res.status, 501);
-      assert.equal(res.headers.get('content-type'), 'application/json');
-      const body = (await res.json()) as { media: string };
-      assert.equal(body.media, 'not_served');
-    }
+  describe('media/preview auth ordering (401 → 404 → 403 → 501)', () => {
+    const paths = (id: string): string[] => [`/jobs/${id}/preview`, `/jobs/${id}/media`];
+
+    test('no headers → 401 even for an existing job (never 501)', async () => {
+      for (const path of paths('job_1')) {
+        const res = await fetch(`${base}${path}`);
+        assert.equal(res.status, 401);
+        const body = (await res.json()) as { error: string; media?: string };
+        assert.equal(body.error, 'missing_guardian');
+        assert.equal(body.media, undefined);
+      }
+    });
+
+    test('family header only → 401', async () => {
+      for (const path of paths('job_1')) {
+        const res = await fetch(`${base}${path}`, { headers: { 'x-family-id': 'fam_1' } });
+        assert.equal(res.status, 401);
+        assert.equal(((await res.json()) as { error: string }).error, 'missing_guardian');
+      }
+    });
+
+    test('no headers and unknown job → 401, not 404', async () => {
+      for (const path of paths('job_missing')) {
+        const res = await fetch(`${base}${path}`);
+        assert.equal(res.status, 401);
+      }
+    });
+
+    test('authenticated + unknown job → 404', async () => {
+      for (const path of paths('job_missing')) {
+        const res = await fetch(`${base}${path}`, { headers: stubAuth });
+        assert.equal(res.status, 404);
+        assert.equal(((await res.json()) as { error: string }).error, 'not_found');
+      }
+    });
+
+    test('authenticated for another family → 403 wrong_family, no media body', async () => {
+      for (const path of paths('job_fam2')) {
+        const res = await fetch(`${base}${path}`, { headers: stubAuth });
+        assert.equal(res.status, 403);
+        const body = (await res.json()) as { error: string; media?: string };
+        assert.equal(body.error, 'wrong_family');
+        assert.equal(body.media, undefined);
+      }
+    });
+
+    test('authenticated + same family → 501 with no bytes', async () => {
+      for (const path of paths('job_1')) {
+        const res = await fetch(`${base}${path}`, { headers: stubAuth });
+        assert.equal(res.status, 501);
+        assert.equal(res.headers.get('content-type'), 'application/json');
+        const body = (await res.json()) as { media: string; error: string };
+        assert.equal(body.media, 'not_served');
+        assert.equal(body.error, 'not_implemented');
+      }
+    });
+
+    test('non-GET methods never reach 501 (auth first, then 404)', async () => {
+      const noAuth = await fetch(`${base}/jobs/job_1/media`, { method: 'POST' });
+      assert.equal(noAuth.status, 401);
+      const authed = await fetch(`${base}/jobs/job_1/media`, { method: 'POST', headers: stubAuth });
+      assert.equal(authed.status, 404);
+    });
   });
 
   test('POST /jobs/:id/approve then refuse a second approve', async () => {
