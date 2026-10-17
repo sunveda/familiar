@@ -22,6 +22,7 @@ export interface ReviewStore {
   putJob(job: Job): void;
   getEnrollment(id: EnrollmentId): Enrollment | undefined;
   putEnrollment(enrollment: Enrollment): void;
+  listEnrollmentsByConsent(consentId: ConsentRecordId): Enrollment[];
   getConsent(id: ConsentRecordId): ConsentRecord | undefined;
   putConsent(consent: ConsentRecord): void;
   recordIntendedAudit(event: AuditEvent): AuditAppendResult;
@@ -70,6 +71,9 @@ export function createMemoryStore(seed: MemorySeed = {}): ReviewStore {
     },
     putEnrollment(enrollment: Enrollment): void {
       enrollments.set(enrollment.id, enrollment);
+    },
+    listEnrollmentsByConsent(consentId: ConsentRecordId): Enrollment[] {
+      return [...enrollments.values()].filter((e) => e.consentRecordId === consentId);
     },
     getConsent(id: ConsentRecordId): ConsentRecord | undefined {
       return consents.get(id);

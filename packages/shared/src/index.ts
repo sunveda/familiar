@@ -113,3 +113,20 @@ export type {
   NodeLikeHeaders,
   TenancyContext,
 } from './auth-context';
+
+export {
+  ARTIFACT_KEY_ENV,
+  createInMemoryArtifactStore,
+  createLocalEncryptedArtifactStore,
+  envKeyProvider,
+  revokeAndDeleteEnrollmentArtifact,
+} from './artifact-store';
+export type {
+  ArtifactKeyProvider,
+  ArtifactStoreErrorCode,
+  ArtifactStoreResult,
+  EnrollmentArtifactStore,
+  LocalEncryptedArtifactStoreOptions,
+  PutArtifactInput,
+} from './artifact-store';
+export type { RevokeAndDeleteResult } from './artifact-store';

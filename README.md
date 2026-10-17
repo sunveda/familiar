@@ -54,13 +54,13 @@ This README is the product source of truth. Implementation stubs and design note
 ## Docs
 
 - [**CONTEXT (living handoff)**](docs/CONTEXT.md)
-- [docs/](./docs/README.md) — architecture, consent, guardian flow, threat-model, and auth/tenancy stubs
+- [docs/](./docs/README.md) — documentation index: architecture, state machines, data model, API contracts, clients (web/iOS/Android, planned), security and threat model, ADRs, dev/test guides, roadmap
 
 ## Repository layout
 
 | Path | What it is |
 | --- | --- |
-| [docs/](./docs/README.md) | Architecture, consent, guardian flow, threat-model, and auth/tenancy stubs |
+| [docs/](./docs/README.md) | Architecture, design, ADRs, API contracts, clients, security, dev/test guides |
 | [apps/](./apps/README.md) | Ingest, convert, and review-api placeholders (no ML) |
 | [packages/shared](./packages/shared/) | Types: Family, Guardian, Enrollment, ConsentRecord, Job |
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Consent, enrollment scope, git hygiene, revoke/delete |
