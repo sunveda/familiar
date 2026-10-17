@@ -89,14 +89,23 @@ export function createRouter(
       return;
     }
 
-    const media = url.match(/^\/jobs\/([^/]+)\/(media|preview)\/?$/);
-    if (method === 'GET' && media) {
-      json(res, 501, { ...mediaNotServedBody, jobId: media[1] });
+    const ctx = requireStubAuth(req, res);
+    if (!ctx) {
       return;
     }
 
-    const ctx = requireStubAuth(req, res);
-    if (!ctx) {
+    // Media/preview: authenticate (401) → job exists (404) → same family (403)
+    // → only then 501. Auth and authorization happen before the not-implemented
+    // answer so unauthenticated callers learn nothing. No bytes are ever served.
+    const media = url.match(/^\/jobs\/([^/]+)\/(media|preview)\/?$/);
+    if (method === 'GET' && media) {
+      const jobId = media[1] ?? '';
+      const found = getFamilyJob(store, jobId, ctx.familyId);
+      if (!found.ok) {
+        json(res, statusForFlowError(found.errorCode), { error: found.errorCode, jobId });
+        return;
+      }
+      json(res, 501, { ...mediaNotServedBody, jobId });
       return;
     }
 
