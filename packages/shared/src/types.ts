@@ -166,6 +166,8 @@ export type AuditEventKind =
   | 'consent_revoked'
   | 'enrollment_revoked'
   | 'enrollment_deleted'
+  | 'artifact_stored'
+  | 'artifact_access_denied'
   | 'convert_refused'
   | 'convert_queued'
   | 'review_approved'
