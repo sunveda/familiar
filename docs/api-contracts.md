@@ -137,7 +137,7 @@ Refused with a revoked enrollment → `400 {"error":"convert_refused","familyId"
 
 ## 5. Shared TypeScript surface (not HTTP)
 
-Exported from `packages/shared`: `convertJobMayRun`, `activateEnrollment`, `revokeEnrollment`, `deleteEnrollment`, `grantConsent`, `revokeConsent`, `queueConvertJob`, `startConvertJob`, `completeConvertJob`, `failConvertJob`, `cancelConvertJob`, `queueConvertFromIngest`, `isExternalSourceRef`, `resolveAuthContext[FromHeaders]`, `assertSameFamily`, `httpStatusForAuthError`, `createAuditLog`, `validateAuditEvent`. Proposed in PR #23/#24 (not on `main`): convert backend interface and runner; encrypted artifact store.
+Exported from `packages/shared`: `convertJobMayRun`, `activateEnrollment`, `revokeEnrollment`, `deleteEnrollment`, `grantConsent`, `revokeConsent`, `queueConvertJob`, `startConvertJob`, `completeConvertJob`, `failConvertJob`, `cancelConvertJob`, `queueConvertFromIngest`, `isExternalSourceRef`, `resolveAuthContext[FromHeaders]`, `assertSameFamily`, `httpStatusForAuthError`, `createAuditLog`, `validateAuditEvent`. Merged in PR #23/#24 (stubs): convert backend interface and runner (Python); encrypted artifact store (`packages/shared/src/artifact-store.ts`).
 
 ## 6. Future: OpenAPI and planned endpoints
 

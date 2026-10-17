@@ -9,7 +9,7 @@
 | Convert | `apps/convert/tests/` (`test_pipeline`, `test_jobs`, `test_http`, `test_auth`, `test_audit`) | `python3 -m unittest discover -s apps/convert/tests -v` | Python gate mirror + fixture, queue/status, HTTP, auth mirror, audit |
 | Ingest | `apps/ingest/tests/` (`test_main`, `test_http`, `test_auth`) | `python3 -m unittest discover -s apps/ingest/tests -v` | `sourceRef`, staging, handoff, HTTP, auth mirror |
 
-Counts are not listed because they change per PR; PR #23 and #24 (drafts) add convert-runner and artifact-store suites that are not on `main`.
+Counts are not listed because they change per PR; PR #23 and #24 (merged) added convert-runner and artifact-store suites.
 
 ## Fail-closed tests required forever
 

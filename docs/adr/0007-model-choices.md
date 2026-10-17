@@ -31,7 +31,7 @@ Seed-VC weights license; LivePortrait/InsightFace dependency; RVC and CosyVoice 
 - Face swap licensing is the main blocker; alternatives: reenactment with a non-InsightFace detector, a commercial InsightFace license, or a model trained on consented data.
 - Spike procedure is own-media-only, outputs outside git ([development.md](../development.md#spike-procedure-own-media-only)).
 - GPU hosts for biometric data: dedicated/secure only, not peer-hosted; no third-party inference APIs.
-- Convert backend must be swappable (interface proposed in PR #23).
+- Convert backend must be swappable (interface merged in PR #23).
 
 ## Alternatives considered
 TTS-based dubbing (loses prosody); single end-to-end commercial API (violates private-model and no-third-party rules).

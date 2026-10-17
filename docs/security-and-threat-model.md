@@ -13,7 +13,7 @@ Assets: parent voice/face samples and embeddings (biometric personal data), cons
 | **S**poofing | Caller claims another guardian/family | **None effective**: stub headers prove nothing ([ADR 0004](./adr/0004-stub-auth-tenancy.md)) | IdP-verified principal; membership lookup; short-lived tokens; step-up for revoke/delete/approve |
 | Spoofing | Enrolling someone else's face/voice | `ConsentRecord` binding checked at activation | Liveness / same-person check, voice challenge at enrollment ([clients.md](./clients.md#4-consent-ux-per-platform)); guardian identity verification (counsel/product) |
 | **T**ampering | Edit job to target another enrollment | Gate re-checks family, binding, status, scope | Signed job envelope; worker re-verifies gate from authoritative DB, not from the job payload |
-| Tampering | Tamper with stored artifact | n/a (no store) | AES-256-GCM with authenticated header (proposed PR #24); integrity checks |
+| Tampering | Tamper with stored artifact | Local stub store (#24), not production | AES-256-GCM with authenticated header (merged in PR #24, local stub); integrity checks |
 | **R**epudiation | Guardian denies approve/revoke | In-memory metadata-only `AuditEvent`s (not durable) | Durable append-only audit store; actor from verified principal; hash-chained log |
 | **I**nformation disclosure | Cross-family reads | `assertSameFamily` on routes; every record has `familyId` | DB row-level scoping, per-family encryption context, tests that fail closed forever |
 | Information disclosure | Biometrics/media in git, logs, audit | `.gitignore`, `git-hygiene` CI, audit forbidden-key validator | Log scrubbing, secret scanning, DLP on worker egress |
@@ -67,7 +67,7 @@ Goal: any Familiar output is identifiable as AI-altered. Proposed: C2PA Content 
 
 ## 8. Key management (planned)
 
-- Per-family data keys wrapped by a KMS master key; envelope encryption for enrollment artifacts (PR #24 proposes AES-256-GCM with env/`ArtifactKeyProvider`-supplied key for a local implementation only; not production key management).
+- Per-family data keys wrapped by a KMS master key; envelope encryption for enrollment artifacts (PR #24 merged AES-256-GCM with env/`ArtifactKeyProvider`-supplied key for a local implementation only; not production key management).
 - Revoke/delete = delete artifact bytes **and** destroy/disable the wrapped key (crypto-shred) where feasible.
 - Separate keys for artifacts, provenance signing, and session/IdP secrets. Rotation procedure and break-glass access: to be designed.
 - Nothing key-like in git; `.env.example` is the only env file allowed ([`git-hygiene`](./development.md#ci-jobs)).

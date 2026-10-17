@@ -3,7 +3,7 @@
 Familiar is a **family-scoped** pipeline: ingest a source video, convert it using an explicitly selected, consented parent enrollment (voice **and** face together, per [ADR 0006](./adr/0006-voice-and-face-together-v1.md)), then require guardian review before kids see anything.
 
 > **Status legend used across these docs**
-> **Built (stub)** = exists on `main`, metadata-only, no ML. **Proposed, in PR #23/#24** = open draft PRs, not merged, not relied on here. **Planned** = design intent, nothing exists.
+> **Built (stub)** = exists on `main`, metadata-only, no ML. **Merged in #23/#24** = stub-level, not production; no real capture or models. **Planned** = design intent, nothing exists.
 >
 > No ML, no biometric capture, no media handling and no production auth exist in this repository today.
 
@@ -17,8 +17,8 @@ Related: [state-machines.md](./state-machines.md) · [data-model.md](./data-mode
 | `apps/review-api` | TypeScript | Guardian API: list/get jobs, approve/reject, revoke/delete enrollment. In-memory store. Never serves media (`501`) | Built (stub) |
 | `apps/ingest` | Python | Register opaque external `sourceRef`; `queued → staged \| failed`; hand off to convert with explicit `targetEnrollmentId` | Built (stub): no download, no ffmpeg |
 | `apps/convert` | Python | Queue + status stubs; Python mirror of the consent gate | Built (stub): no models |
-| Convert backend interface, `MockBackend`, gate-first runner | Python | Pluggable voice-then-face stages; re-checks gate before each backend call | Proposed, in PR #23 |
-| Encrypted enrollment artifact store (AES-256-GCM local impl) | TypeScript | Opaque `artifactRef`, put/get/delete/revoke | Proposed, in PR #24 |
+| Convert backend interface, `MockBackend`, gate-first runner | Python | Pluggable voice-then-face stages; re-checks gate before each backend call | Built (stub), merged in #23 |
+| Encrypted enrollment artifact store (AES-256-GCM local impl) | TypeScript | Opaque `artifactRef`, put/get/delete/revoke | Built (stub), merged in #24 |
 | Private GPU convert worker (voice conversion, face reenactment/swap, lip-sync, mux) | Python/GPU | Real inference, loads artifacts for **one family** at runtime | Planned |
 | Durable DB, durable audit store, object storage for source/output media | n/a | Persistence | Planned |
 | IdP / real auth | n/a | Replaces stub headers | Planned, **blocked** |
@@ -75,7 +75,7 @@ Dotted edges are planned. Solid edges exist as in-process or HTTP stubs. Today t
 | --- | --- |
 | Git / CI | Source code only. No media, models, embeddings, secrets ([`git-hygiene` CI job](./development.md#ci-jobs)). |
 | Client ↔ API | **Today:** claimed `x-family-id` / `x-guardian-id` headers only (stub; proves nothing). **Planned:** IdP-verified principal. Clients are untrusted: the consent gate is enforced server-side only ([ADR 0009](./adr/0009-client-stack.md)). |
-| API ↔ enrollment store | Opaque `artifactRef` only in app records. Artifact bytes live in an encrypted store outside git (planned; PR #24 proposes the interface). |
+| API ↔ enrollment store | Opaque `artifactRef` only in app records. Artifact bytes live in an encrypted store outside git (local AES-256-GCM stub merged in PR #24; not production, not wired to capture). |
 | API ↔ GPU worker | Worker is given a job and re-verifies the gate; it may load artifacts for that job's family only, never logs raw biometrics (planned). |
 | Guardian ↔ kid | Kids never approve, never enroll, never call guardian APIs. Preview requires guardian auth (planned; stub returns `501` for media). |
 
@@ -102,7 +102,7 @@ flowchart TD
 Notes grounded in code:
 
 - Ingest staging is a **status flip only**; it does not download or transcode ([`stage_ingest_job`](../apps/ingest/src/familiar_ingest/jobs.py)).
-- The gate runs at **queue** time in the stubs. The proposed runner (PR #23) re-runs it before every backend stage; that is not on `main`.
+- The gate runs at **queue** time in the stubs. The runner merged in PR #23 re-runs it before every backend stage (mock backend only; the HTTP /run stubs do not yet use it).
 - `approved` is the only status after which kid release may occur. There is **no release or kid-facing endpoint** in the code; "release" is planned.
 
 ## 4. Deployment view (planned)

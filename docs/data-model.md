@@ -51,7 +51,7 @@ All timestamps are ISO-8601 strings (`IsoTimestamp`). All ids are opaque strings
 `id`, `familyId`, `guardianId`, `consentRecordId`, `modality: 'voice' | 'face' | 'voice_and_face'`, `status`, `artifactRef | null`, `createdAt`, `revokedAt | null`, `deletedAt | null`. Invariants: state machine in [state-machines.md](./state-machines.md); activation needs bound, same-family, unrevoked, scoped consent; `deleted` ⇒ `artifactRef === null`. v1 product target is `voice_and_face` ([ADR 0006](./adr/0006-voice-and-face-together-v1.md)); the type still allows the other modalities.
 
 ### artifactRef (`EnrollmentArtifactRef`)
-`storageKey` (opaque key, not a repo path), `contentType`, `createdAt`. A pointer to an encrypted store that does not exist yet (interface proposed in PR #24, not relied on here). Never contains bytes, embeddings or keys.
+`storageKey` (opaque key, not a repo path), `contentType`, `createdAt`. A pointer to an encrypted store that does not exist yet (interface merged in PR #24 as a non-production stub). Never contains bytes, embeddings or keys.
 
 ### Job (IngestJob / ConvertJob share one shape)
 `id`, `familyId`, `requestedByGuardianId`, `kind: 'ingest' | 'convert' | 'review'`, `status` (see [state-machines.md](./state-machines.md)), `targetEnrollmentId | null`, `sourceRef | null`, `createdAt`, `updatedAt`, `errorCode | null`.
@@ -61,7 +61,7 @@ All timestamps are ISO-8601 strings (`IsoTimestamp`). All ids are opaque strings
 - No output/result reference field exists yet. Where the rendered output lives is **planned** (object storage key on the job or a separate artifact entity).
 
 ### AuditEvent
-`id`, `familyId`, `actorGuardianId | null`, `kind`, `at`, `subjectRef | null`, `metadata: Record<string, string | number | boolean | null>`. Kinds on `main`: `consent_granted`, `consent_revoked`, `enrollment_revoked`, `enrollment_deleted`, `convert_refused`, `convert_queued`, `review_approved`, `review_rejected` (PR #24 proposes two more). Invariants: validated on append (required fields, known kind, primitive-only metadata, no forbidden biometric/secret-like keys such as `embedding`, `audio`, `face`, `token`, `model`); stored by clone; in-memory, process lifetime, **not durable**. See [audit.md](./audit.md). Note: Python services build audit events as plain dicts with their own mirror log.
+`id`, `familyId`, `actorGuardianId | null`, `kind`, `at`, `subjectRef | null`, `metadata: Record<string, string | number | boolean | null>`. Kinds on `main`: `artifact_stored`, `artifact_access_denied` (added by #24), `consent_granted`, `consent_revoked`, `enrollment_revoked`, `enrollment_deleted`, `convert_refused`, `convert_queued`, `review_approved`, `review_rejected`. Invariants: validated on append (required fields, known kind, primitive-only metadata, no forbidden biometric/secret-like keys such as `embedding`, `audio`, `face`, `token`, `model`); stored by clone; in-memory, process lifetime, **not durable**. See [audit.md](./audit.md). Note: Python services build audit events as plain dicts with their own mirror log.
 
 ### ConvertAbuseHook
 `{ status: 'disabled' }`. No-op; cannot override the gate.

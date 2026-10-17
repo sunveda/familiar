@@ -1,6 +1,6 @@
 # ADR 0005: Opaque `artifactRef` and an encrypted store outside git
 
-- **Status:** Accepted as a rule; the store is **planned** (interface and local AES-256-GCM implementation proposed in PR #24, not merged, not relied on here)
+- **Status:** Accepted as a rule; interface and local AES-256-GCM stub implementation merged in PR #24 (non-production, not wired to real capture; KMS and crypto-erase open)
 - **Date:** not recorded
 - **Deciders:** Familiar, CoE
 

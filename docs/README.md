@@ -30,6 +30,6 @@ Product intent and safety rails live in the root [README](../README.md). Living 
 
 ## Status vocabulary
 
-**Built (stub)**: on `main`, metadata-only. **Proposed, in PR #23/#24**: open drafts (convert backend interface; encrypted enrollment artifact store), not merged and not depended on. **Planned**: design only. **[placeholder]**: owner to fill, no invented text. **[U]/unverified**: not confirmed.
+**Built (stub)**: on `main`, metadata-only. **Merged in #23/#24 (stub, not production)**: convert backend interface + MockBackend + gate-first runner; encrypted enrollment artifact store (not wired to real capture). **Planned**: design only. **[placeholder]**: owner to fill, no invented text. **[U]/unverified**: not confirmed.
 
 Keep docs aligned with `packages/shared` types and the gate fixtures; docs changes that touch behavior belong in the same PR as the code.

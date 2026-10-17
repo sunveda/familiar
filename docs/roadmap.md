@@ -19,8 +19,8 @@ Foundation scaffold and safety docs; hardening; enrollment state machine; review
 
 ## In flight (open draft PRs, not merged, not relied on by these docs)
 
-- **PR #23**: pluggable convert backend interface, `MockBackend`, gate-first runner.
-- **PR #24**: encrypted enrollment artifact store (AES-256-GCM local impl + in-memory double).
+- **PR #23 (merged)**: pluggable convert backend interface, `MockBackend`, gate-first runner.
+- **PR #24 (merged)**: encrypted enrollment artifact store (AES-256-GCM local impl + in-memory double).
 - **This docs PR**: architecture, design, ADRs, API, client and dev guides.
 - Spike research plan written (off git); **experiment not run** (needs owner media + consent record).
 
@@ -37,7 +37,7 @@ Foundation scaffold and safety docs; hardening; enrollment state machine; review
 
 ## Next (planned, in rough order)
 
-1. CoE review and merge decisions on #23, #24 (CoS merges).
+1. (Done) #23 and #24 merged.
 2. Run the own-media spike once inputs and consent exist; update ADR 0007 from Proposed with measurements and closed licensing items.
 3. OpenAPI-first contract (`/v1`), unified error envelope, and IdP selection ([clients.md](./clients.md#2-shared-api-contract)).
 4. Durable store + durable audit store; consent revoke cascade to enrollments and in-flight jobs; HTTP routes for consent and enrollment lifecycle.

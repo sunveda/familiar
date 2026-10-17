@@ -24,7 +24,7 @@ stateDiagram-v2
 | `pending\|active → revoked` | `revokeEnrollment` | not `deleted`; optional family match; already `revoked` is an idempotent success | status `revoked`, `revokedAt` set | `already_deleted`, `wrong_family`, `illegal_transition` |
 | `pending\|active\|revoked → deleted` | `deleteEnrollment` | optional family match; already `deleted` is idempotent (re-nulls `artifactRef`) | status `deleted`, `deletedAt` set, `revokedAt` defaulted to `at`, **`artifactRef = null`** | `wrong_family`, `illegal_transition` |
 
-Illegal by design: anything → `pending` (create-only); `deleted → *` (terminal); `revoked → active` (no reactivation, create a new enrollment). Deleting artifact **bytes** in the encrypted store is planned (interface proposed in PR #24); today only the pointer is nulled.
+Illegal by design: anything → `pending` (create-only); `deleted → *` (terminal); `revoked → active` (no reactivation, create a new enrollment). Artifact bytes deletion exists in the stub store merged in PR #24 (best-effort overwrite; crypto-erase planned) but is not yet wired to the review-api; today the API only nulls the pointer.
 
 Consent revocation (`revokeConsent`) does **not** mutate enrollments. Convert fails closed because `convertJobMayRun` checks consent directly. [consent.md](./consent.md) describes related enrollments becoming `revoked`; that cascade is **not implemented** in code (planned).
 
@@ -76,7 +76,7 @@ stateDiagram-v2
 
 `JobStatus` also contains `staged` (ingest only). `JobKind` includes `review`, but no code creates review-kind jobs.
 
-Note: the stub `/run` and `/complete` endpoints do **not** re-check the gate (it runs at queue time). PR #23 proposes a gate-first runner that does; treat re-checking before every stage as a requirement for any real worker ([ADR 0002](./adr/0002-ts-canonical-gate-python-mirror.md)).
+Note: the stub `/run` and `/complete` endpoints do **not** re-check the gate (it runs at queue time). The gate-first runner merged in PR #23 does; treat re-checking before every stage as a requirement for any real worker ([ADR 0002](./adr/0002-ts-canonical-gate-python-mirror.md)).
 
 ## `convertJobMayRun` exact checks
 

@@ -12,7 +12,7 @@ The convert gate is the core safety control. It must be identical wherever conve
 
 ## Consequences
 - Drift is caught by CI rather than review memory.
-- Any real GPU worker must call the gate again before each stage (proposed in PR #23).
+- Any real GPU worker must call the gate again before each stage (runner merged in PR #23).
 - Removing/skipping these tests is a regression (`CONTRIBUTING.md`).
 
 ## Alternatives considered
