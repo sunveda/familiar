@@ -30,6 +30,13 @@ Repo: https://github.com/sunveda/familiar
 - **Auth:** stub tenancy only (`docs/auth-tenancy.md`). Production IdP / OIDC / JWT **blocked**
 - Safety rails required: consent records, enrollment scope, fail-closed family checks — see README + CONTRIBUTING
 
+## Current status (2026-11-04 — walkthrough documentation branch)
+
+- Owner explicitly requested a Familiar specification/screen/user-flow video stored on GitHub. [Walkthrough and transcript](walkthrough/README.md) use only synthetic data and stock synthetic narration.
+- Video captures local guardian-review work continuing PR #30; native and future screens are labeled illustrative/unverified. This branch publishes the video/docs only, not the separate local application changes.
+- Feature development was resumed by the owner in November; historical hold notes below are retained for context. Production auth, real capture/conversion and media release remain incomplete.
+- Video storage exception is limited to the exact synthetic MP4 path. No merge or deployment.
+
 ## Current status (2026-09-15)
 
 ### `main` (approx.)

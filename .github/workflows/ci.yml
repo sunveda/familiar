@@ -47,7 +47,8 @@ jobs:
           # Directory prefixes (trailing slash) avoid flagging source docs such as
           # docs/embeddings.md. .env.example is the only env template allowed.
           pattern='(^|/)\.env($|\.)|(^|/)embeddings/|\.(pt|pth|onnx|safetensors|gguf|npy|emb|mp4|wav)$'
-          allow='(^|/)\.env\.example$'
+          # Exact exception: owner-requested synthetic walkthrough; never personal media.
+          allow='(^|/)\.env\.example$|^docs/walkthrough/familiar-walkthrough\.mp4$'
           hits="$(git ls-files | grep -E "${pattern}" | grep -vE "${allow}" || true)"
           if [ -n "${hits}" ]; then
             echo "Tracked files match forbidden biometric/media/secret patterns:"

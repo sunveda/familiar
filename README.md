@@ -11,6 +11,10 @@ Update that file **daily while this repo is active**, and on every major directi
 
 Also: [AGENTS.md](AGENTS.md)
 
+## Product walkthrough
+
+[Watch the narrated specification, screens and user-flow walkthrough](docs/walkthrough/README.md) (2026-11-04). Actual local web screens are separated from illustrative native and planned flows. This documentation branch does not publish the local app implementation.
+
 ## Goals
 
 - Better learning / comfort for kids when content feels like Mom/Dad

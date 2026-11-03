@@ -1,0 +1,110 @@
+[
+  {
+    "start": 0,
+    "end": 17.533,
+    "title": "Familiar",
+    "subtitle": "Specification & screen walkthrough",
+    "label": "LOCAL PROTOTYPE · NOVEMBER 2026",
+    "kind": "intro",
+    "narration": "Familiar aims to personalize educational videos with a registered, consenting parent’s face and voice. This walkthrough separates the current local prototype from planned features. All examples are synthetic. The narrator is a stock computer voice, not a parent or child."
+  },
+  {
+    "start": 17.533,
+    "end": 37.333,
+    "title": "What the product must do",
+    "subtitle": "One family. Explicit consent. Guardian review.",
+    "label": "PRODUCT SPECIFICATION",
+    "kind": "spec",
+    "narration": "The specification calls for web, iOS, and Android clients sharing a family-scoped API. A parent must consent before enrollment and conversion. Revocation must stop downstream use. A guardian must review output before a child can see it. Real authentication and conversion are not implemented."
+  },
+  {
+    "start": 37.333,
+    "end": 55.0,
+    "title": "01 / Home",
+    "subtitle": "Current web screen",
+    "label": "ACTUAL LOCAL WEB CAPTURE",
+    "kind": "home",
+    "narration": "This is the actual web Home screen. The permanent banner explains that identity is only a development header claim, not a secure login. The navigation contains Home, Review, and Dev settings. English and Japanese are available. There is no capture or media playback."
+  },
+  {
+    "start": 55.0,
+    "end": 74.333,
+    "title": "02 / Dev settings",
+    "subtitle": "Configure the synthetic demo",
+    "label": "ACTUAL LOCAL WEB CAPTURE",
+    "kind": "settings",
+    "narration": "Dev settings accepts the API base URL, family ID, and guardian ID. These example values are synthetic, not credentials. Save stores the development settings locally, and Check API health checks connectivity. The local walkthrough server is read only and refuses all write requests."
+  },
+  {
+    "start": 74.333,
+    "end": 91.8,
+    "title": "03 / Review list",
+    "subtitle": "Open a family job",
+    "label": "ACTUAL LOCAL WEB CAPTURE",
+    "kind": "jobs",
+    "narration": "Review loads the synthetic family job list from the local API. Each row shows a job identifier and status. Select a row to fetch its details, or use Refresh to reload. Empty and error states are implemented. Foreign-family or malformed data is refused."
+  },
+  {
+    "start": 91.8,
+    "end": 110.0,
+    "title": "04 / Job details",
+    "subtitle": "Status is not permission to release",
+    "label": "ACTUAL LOCAL WEB CAPTURE",
+    "kind": "detail",
+    "narration": "The detail screen shows the selected job, its status, target enrollment, and update time. Back to jobs returns to the list. Preview is explicitly unavailable. There is no approve or release button. A needs-review status does not mean any playable or converted video exists."
+  },
+  {
+    "start": 110.0,
+    "end": 129.0,
+    "title": "05 / Native entry",
+    "subtitle": "iOS & Android: fixture mode first",
+    "label": "ILLUSTRATION · NOT A DEVICE CAPTURE",
+    "kind": "native-start",
+    "narration": "These are illustrations based on the current SwiftUI and Compose source, not verified device captures. Both clients start with synthetic fixture data. They show a guardian job list, details, and an unavailable-preview message. iOS is still a reusable package without a complete app host."
+  },
+  {
+    "start": 129.0,
+    "end": 149.667,
+    "title": "06 / Native connection",
+    "subtitle": "An explicit development option",
+    "label": "ILLUSTRATION · UNVERIFIED NETWORK FLOW",
+    "kind": "native-connect",
+    "narration": "The native development forms request an HTTPS endpoint and synthetic family and guardian IDs. Cancel returns to fixture mode. Connect is intended to load read-only metadata. Settings stay in memory. A trusted HTTPS endpoint and device testing are still needed; this flow is not verified end to end."
+  },
+  {
+    "start": 149.667,
+    "end": 169.267,
+    "title": "07 / Native review",
+    "subtitle": "Fresh details, refresh and back",
+    "label": "ILLUSTRATION · UNVERIFIED DEVICE FLOW",
+    "kind": "native-detail",
+    "narration": "Connected native views are designed to fetch the list and fresh details, show loading and errors, and discard late results after leaving a screen. Disconnect returns to fixtures. Neither adapter exposes approval, release, or media playback. Android builds and native navigation tests remain unverified."
+  },
+  {
+    "start": 169.267,
+    "end": 189.533,
+    "title": "Planned / consent & enrollment",
+    "subtitle": "Design intent, not implemented screens",
+    "label": "PLANNED · ILLUSTRATIVE WIREFRAMES",
+    "kind": "planned-consent",
+    "narration": "The planned flow begins with secure guardian sign-in, explicit consent, and parent enrollment. Consent choices must start unchecked. Voice and face capture must wait for valid consent and the required privacy review. The boxes here are illustrative wireframes. These screens and capture capabilities are not implemented."
+  },
+  {
+    "start": 189.533,
+    "end": 210.4,
+    "title": "Planned / conversion to playback",
+    "subtitle": "Every release stays behind guardian review",
+    "label": "PLANNED · ILLUSTRATIVE WIREFRAMES",
+    "kind": "planned-convert",
+    "narration": "Next, a guardian would provide a source, choose a registered in-family parent, and request conversion. The backend would recheck consent, then create a preview for guardian approval or rejection. Only approved output could reach a child. Real conversion, preview, approval delivery, and child playback remain unfinished."
+  },
+  {
+    "start": 210.4,
+    "end": 232.933,
+    "title": "What works / what comes next",
+    "subtitle": "A review prototype, not a finished family app",
+    "label": "STATUS & VALIDATION LIMITS",
+    "kind": "closing",
+    "narration": "Today, the local web review demo works with synthetic metadata. Two hundred and five JavaScript and TypeScript tests pass. Swift API smoke checks pass, but SwiftUI tooling blocks a full build. Android tooling is absent. No native end-to-end verification, production login, real enrollment, conversion, or media release is claimed."
+  }
+]

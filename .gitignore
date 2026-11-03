@@ -79,3 +79,6 @@ logs/
 .tmp/
 tmp/
 data/local/
+
+# Owner-requested synthetic product walkthrough only (no personal media).
+!/docs/walkthrough/familiar-walkthrough.mp4
