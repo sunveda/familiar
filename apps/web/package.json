@@ -1,0 +1,28 @@
+{
+  "name": "@familiar/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reference web client for Familiar (stub auth, no capture, no media).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.8",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "jsdom": "26.1.0",
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
+  }
+}
